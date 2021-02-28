@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Setup extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'school',
+        'address',
+        'city',
+        'county',
+        'zip',
+        'email',
+        'phone',
+        'website',
+        'motto',
+        'logo',
+        'is_active',
+    ];
+}
