@@ -15,6 +15,20 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable sign up on the web
+    |--------------------------------------------------------------------------
+    |
+    | This value is used to determine whether to allow admin user sign ups on web
+    | This should only be allowed in developement mode, once in production, set this to false
+    | otherwise random pple will be able to sign up to your app.
+    |
+    */
+
+    'sign_up' => env('APP_ENABLE_SIGN_UP', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

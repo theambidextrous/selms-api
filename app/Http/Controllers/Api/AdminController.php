@@ -22,10 +22,32 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
 use App\Mail\Code;
 
+/**
+ * @OA\Info(
+ *     title="My API",
+ *     version="1.0.0"
+ * )
+ */
+
+/**
+ * @OA\Get(
+ *     path="/api/ping",
+ *     tags={"General"},
+ *     summary="Check API health",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
 class AdminController extends Controller
 {
+    protected function abortIfForbidden() {
+        $canSignUp = config('app.sign_up');
+        if($canSignUp == false){
+            abort(403, 'Actions not available');
+        }
+    }
     public function signup(Request $request)
     {
+        $this->abortIfForbidden();
         try{
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string',
@@ -41,10 +63,11 @@ class AdminController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
+                    'success' => false,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = true;
@@ -89,6 +112,7 @@ class AdminController extends Controller
     }
     public function update_info(Request $request)
     {
+        $this->abortIfForbidden();
         try{
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string',
@@ -102,7 +126,8 @@ class AdminController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
+                    'success' => false,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
                 ], 403);
@@ -148,7 +173,8 @@ class AdminController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
+                    'success' => false,
                     'message' => 'Passwords do not match',
                     'errors' => $validator->errors()->all(),
                 ], 403);
@@ -182,6 +208,7 @@ class AdminController extends Controller
         $filename = ('app/cls'.$file);
         return response()->download(storage_path($filename), null, [], null);
     }
+
     public function signin(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -190,7 +217,8 @@ class AdminController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
+                'success' => false,
                 'message' => "Invalid Email or password",
                 'errors' => $validator->errors()->all(),
             ], 403);
@@ -310,7 +338,8 @@ class AdminController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
+                'success' => false,
                 'message' => 'Passwords do no match',
                 'errors' => $validator->errors()
             ], 403);

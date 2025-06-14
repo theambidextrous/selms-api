@@ -1,0 +1,51 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Senior education learning management system apis",
+        "description": "API Documentation",
+        "contact": {
+            "email": "api@selms-app.com"
+        },
+        "license": {
+            "name": "BSD"
+        },
+        "version": "3.1.121"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/ping": {
+            "get": {
+                "tags": [
+                    "General"
+                ],
+                "summary": "Check API health",
+                "operationId": "3f437063ed788368d1f56c7d978602eb",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "General",
+            "description": "General"
+        }
+    ]
+}
