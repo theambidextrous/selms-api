@@ -22,7 +22,7 @@ class IndexController extends Controller
     {
         $chart = new StudentChart;
         $chart->labels($data[0]);
-        $chart->dataset('Student peformance', 'line', $data[1]);
+        $chart->dataset('Home page', 'line', $data[1]);
         $chart->height(250);
         $chart->width(400);
         $chart->displayLegend(true);
@@ -30,7 +30,7 @@ class IndexController extends Controller
     }
     public function index()
     {
-        $chart_data = [['one', 'two', 'three'], [446,989,1078]];
+        $chart_data = [['Gate', 'Door', 'Window'], [0,989,1078]];
         return view('index', ['chart' => $this->make_chart($chart_data)]);
     }
 }
