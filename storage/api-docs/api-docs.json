@@ -270,6 +270,146 @@
                 }
             }
         },
+        "/pci/api/v1/forms/add": {
+            "post": {
+                "tags": [
+                    "Form"
+                ],
+                "summary": "Add form",
+                "operationId": "a962a643a9661a839fe6f5b435e40e52",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Form"
+                ],
+                "summary": "Edit form",
+                "operationId": "c47a2bc3f0a0d7286ae186080e953baa",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Form"
+                ],
+                "summary": "Drop form",
+                "operationId": "210fb5180f1f6ebcd9be4a9ba3e378fe",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms/findall": {
+            "get": {
+                "tags": [
+                    "Form"
+                ],
+                "summary": "List forms",
+                "operationId": "dc072f916225da52fb699c32146b471c",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms/find/{id}": {
+            "post": {
+                "tags": [
+                    "Form"
+                ],
+                "summary": "Find one form",
+                "operationId": "37f5ee121f2e7630e3eeaf787f47bfa9",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms-streams/add": {
+            "post": {
+                "tags": [
+                    "Form streams"
+                ],
+                "summary": "Add form stream",
+                "operationId": "4da65e29f7c688b3adbcd6e12d8b7f33",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms-streams/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Form streams"
+                ],
+                "summary": "Edit form stream",
+                "operationId": "805026970695a00e77eebdb0da3152bb",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms-streams/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Form streams"
+                ],
+                "summary": "Drop form stream",
+                "operationId": "a73b6925869ac45a95b7e8c9321cad41",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms-streams/findall": {
+            "get": {
+                "tags": [
+                    "Form streams"
+                ],
+                "summary": "Find all form streams",
+                "operationId": "f3bff12042743eccf55077c9b0fd5e93",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms-streams/find/{id}": {
+            "get": {
+                "tags": [
+                    "Form streams"
+                ],
+                "summary": "Find form stream",
+                "operationId": "ecb6b70edbec2adfeed8c856e159f42c",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
         "/pci/api/v1/librarians/add": {
             "post": {
                 "tags": [
@@ -339,6 +479,440 @@
                     }
                 }
             }
+        },
+        "/pci/api/v1/parents/add": {
+            "post": {
+                "tags": [
+                    "Parents"
+                ],
+                "summary": "Add parent",
+                "operationId": "89d765f7e0aabfc3388b517591920101",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/parents/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Parents"
+                ],
+                "summary": "Edit parent",
+                "operationId": "d3dc844c47012ae72467792c9f747d9c",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/parents/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Parents"
+                ],
+                "summary": "Drop parent",
+                "operationId": "0482224ef8f5eabef0cbeeb217f2e179",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/parents/findall": {
+            "get": {
+                "tags": [
+                    "Parents"
+                ],
+                "summary": "List all parents",
+                "operationId": "3b97dd53e2403942cfb730580158a051",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/parents/find/{id}": {
+            "get": {
+                "tags": [
+                    "Parents"
+                ],
+                "summary": "Get parent",
+                "operationId": "1b7cecba45c0f4ca07c9448e9635eef0",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/positions/add": {
+            "post": {
+                "tags": [
+                    "Positions"
+                ],
+                "summary": "Add position",
+                "operationId": "b842c9a2dc1a16bcd465301aaa338441",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/positions/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Positions"
+                ],
+                "summary": "Edit position",
+                "operationId": "c28f7f1a56ce4d90fb40f90fc57e2726",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/positions/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Positions"
+                ],
+                "summary": "Drop position",
+                "operationId": "020a4a59303ac7ac32546edefba6ae63",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/positions/findall": {
+            "get": {
+                "tags": [
+                    "Positions"
+                ],
+                "summary": "List positions",
+                "operationId": "2aee8065d3e725232507bff3780b67b5",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/positions/find/{id}": {
+            "get": {
+                "tags": [
+                    "Positions"
+                ],
+                "summary": "Find one position",
+                "operationId": "49a4b75d7edfc897aa5ee248e84697cb",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/add": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Add student",
+                "operationId": "50dd66b8180df146ca850fef127d65ea",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Edit student",
+                "operationId": "ebe0d088673aaa8c7a4cf5beaad1e7e7",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Drop student",
+                "operationId": "3f05bab8f9eb98ea007f8108ef82c44f",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/findall": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "List students",
+                "operationId": "7f4f966a2c71d337f191600547fdc4cc",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/searchall": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Search all students",
+                "operationId": "cd5382d2f8af1098aeda8fe3b1002d3a",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/find/{id}": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Find one student",
+                "operationId": "382e58c9b0139890e54b1c18d0070035",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/rollover/adm": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Roll the student over by admission",
+                "operationId": "8e19e492f4637811d4a3467f3f2fbaff",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/rollover/form": {
+            "post": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "Roll the student over by form",
+                "operationId": "5ac6215031f9c6945cfe0c4e738a5642",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/subjects/add": {
+            "post": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Add subject",
+                "operationId": "b021a1f73904e8a531816f2e4a9d02c1",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/subjects/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Edit subject",
+                "operationId": "55ce91ac74dc5620efc982b14bad0c89",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/subjects/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Drop subject",
+                "operationId": "7701ae4dfe1200d0331bc93bd01ddea8",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/subjects/unenroll/all/{id}": {
+            "post": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Unenroll all enrollments for this subject",
+                "operationId": "4332aac4e1b288b404ad2900f635fc57",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/subjects/findall": {
+            "get": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "List all subjects",
+                "operationId": "6717047fea6043b70dce8e9b321ca793",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/subjects/by/student/{id}": {
+            "get": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "List all subjects for a student",
+                "operationId": "1446a909bd388b4f693f219e78fa9e17",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/subjects/find/{id}": {
+            "get": {
+                "tags": [
+                    "Subjects"
+                ],
+                "summary": "Find a single subject",
+                "operationId": "8e674e16bab3143b7cef7cf8da868d31",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/teachers/add": {
+            "post": {
+                "tags": [
+                    "Teachers"
+                ],
+                "summary": "Add school teacher",
+                "operationId": "0b4c44d38035f134b1f2340f3e873686",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/teachers/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Teachers"
+                ],
+                "summary": "Edit school teacher",
+                "operationId": "cee207da30f6a63ffdf8c9ad734050de",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/teachers/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Teachers"
+                ],
+                "summary": "Drop school teacher",
+                "operationId": "14a4320616cf76db6babb364e559ed89",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/teachers/findall": {
+            "get": {
+                "tags": [
+                    "Teachers"
+                ],
+                "summary": "List all school teachers",
+                "operationId": "87d87b33c658badb3b532f7a31cafe26",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/teachers/find/{id}": {
+            "get": {
+                "tags": [
+                    "Teachers"
+                ],
+                "summary": "Fetch single s`chool teacher entity",
+                "operationId": "41e05e7189b93e48d66cc81390956289",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/teachers/teacher/subjects": {
+            "post": {
+                "tags": [
+                    "Teachers"
+                ],
+                "summary": "List all teacher subjects",
+                "operationId": "a13ae20a44cbe3807c145baa8a663dfb",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -368,8 +942,36 @@
             "description": "Finance"
         },
         {
+            "name": "Form",
+            "description": "Form"
+        },
+        {
+            "name": "Form streams",
+            "description": "Form streams"
+        },
+        {
             "name": "Librarians",
             "description": "Librarians"
+        },
+        {
+            "name": "Parents",
+            "description": "Parents"
+        },
+        {
+            "name": "Positions",
+            "description": "Positions"
+        },
+        {
+            "name": "Students",
+            "description": "Students"
+        },
+        {
+            "name": "Subjects",
+            "description": "Subjects"
+        },
+        {
+            "name": "Teachers",
+            "description": "Teachers"
         }
     ]
 }

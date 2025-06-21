@@ -23,6 +23,14 @@ use App\Mail\Code;
 
 class ParentController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/parents/add",
+     *     tags={"Parents"},
+     *     summary="Add parent",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
@@ -98,6 +106,15 @@ class ParentController extends Controller
             ], 400);
         }
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/parents/edit/{id}",
+     *     tags={"Parents"},
+     *     summary="Edit parent",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
@@ -162,6 +179,15 @@ class ParentController extends Controller
             ], 400);
         }
     }
+
+          /**
+     * @OA\Post(
+     *     path="/pci/api/v1/parents/drop/{id}",
+     *     tags={"Parents"},
+     *     summary="Drop parent",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         User::find($id)->update([ 'is_active' => false ]);
@@ -172,6 +198,14 @@ class ParentController extends Controller
         ], 200);
     }
     
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/parents/findall",
+     *     tags={"Parents"},
+     *     summary="List all parents",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall(Request $request)
     {
         return response([
@@ -180,6 +214,15 @@ class ParentController extends Controller
             'data' => $this->find_parent_data(),
         ], 200);
     }
+
+        /**
+     * @OA\Get(
+     *     path="/pci/api/v1/parents/find/{id}",
+     *     tags={"Parents"},
+     *     summary="Get parent",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = User::find($id);

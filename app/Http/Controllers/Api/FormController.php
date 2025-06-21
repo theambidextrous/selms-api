@@ -25,6 +25,15 @@ $file_uuid = (string) Str::uuid();
 
 class FormController extends Controller
 {
+    
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/forms/add",
+     *     tags={"Form"},
+     *     summary="Add form",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super )
@@ -69,6 +78,15 @@ class FormController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/forms/edit/{id}",
+     *     tags={"Form"},
+     *     summary="Edit form",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super )
@@ -113,6 +131,15 @@ class FormController extends Controller
             ], 400);
         }
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/forms/drop/{id}",
+     *     tags={"Form"},
+     *     summary="Drop form",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         Form::find($id)->delete();
@@ -123,6 +150,14 @@ class FormController extends Controller
         ], 200);
     }
     
+      /**
+     * @OA\Get(
+     *     path="/pci/api/v1/forms/findall",
+     *     tags={"Form"},
+     *     summary="List forms",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall(Request $request)
     {
         return response([
@@ -131,6 +166,15 @@ class FormController extends Controller
             'data' => $this->find_forms_data(),
         ], 200);
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/forms/find/{id}",
+     *     tags={"Form"},
+     *     summary="Find one form",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = Form::find($id);

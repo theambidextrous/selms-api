@@ -29,6 +29,15 @@ use App\Mail\Code;
 
 class StudentController extends Controller
 {
+    
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/students/add",
+     *     tags={"Students"},
+     *     summary="Add student",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         $file_uuid = (string) Str::uuid();
@@ -119,6 +128,15 @@ class StudentController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/students/edit/{id}",
+     *     tags={"Students"},
+     *     summary="Edit student",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         $file_uuid = (string) Str::uuid();
@@ -209,6 +227,15 @@ class StudentController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/students/drop/{id}",
+     *     tags={"Students"},
+     *     summary="Drop student",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         Student::find($id)->update([ 'is_active' => false ]);
@@ -218,6 +245,15 @@ class StudentController extends Controller
             'errors' => [],
         ], 200);
     }
+
+     /**
+     * @OA\Get(
+     *     path="/pci/api/v1/students/findall",
+     *     tags={"Students"},
+     *     summary="List students",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall()
     {
         return response([
@@ -226,6 +262,15 @@ class StudentController extends Controller
             'data' => $this->find_stud_data(),
         ], 200);
     }
+
+       /**
+     * @OA\Get(
+     *     path="/pci/api/v1/students/searchall",
+     *     tags={"Students"},
+     *     summary="Search all students",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function searchall()
     {
         return response([
@@ -239,6 +284,15 @@ class StudentController extends Controller
             'displinery' => [],
         ], 200);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/students/find/{id}",
+     *     tags={"Students"},
+     *     summary="Find one student",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = Student::find($id);
@@ -256,6 +310,15 @@ class StudentController extends Controller
             'data' => $data,
         ], 200);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/students/rollover/adm",
+     *     tags={"Students"},
+     *     summary="Roll the student over by admission",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function rolloveradm(Request $request)
     {
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
@@ -283,6 +346,15 @@ class StudentController extends Controller
             'data' => [],
         ], 200);
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/students/rollover/form",
+     *     tags={"Students"},
+     *     summary="Roll the student over by form",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function rolloverform(Request $request)
     {
         if( !Auth::user()->is_super && !Auth::user()->is_admin )

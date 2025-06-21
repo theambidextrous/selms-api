@@ -24,6 +24,14 @@ use App\Mail\Code;
 
 class TeacherController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/teachers/add",
+     *     tags={"Teachers"},
+     *     summary="Add school teacher",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super )
@@ -99,6 +107,15 @@ class TeacherController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/teachers/edit/{id}",
+     *     tags={"Teachers"},
+     *     summary="Edit school teacher",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super )
@@ -163,6 +180,15 @@ class TeacherController extends Controller
             ], 400);
         }
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/teachers/drop/{id}",
+     *     tags={"Teachers"},
+     *     summary="Drop school teacher",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         User::find($id)->update([ 'is_active' => false ]);
@@ -173,6 +199,14 @@ class TeacherController extends Controller
         ], 200);
     }
     
+      /**
+     * @OA\Get(
+     *     path="/pci/api/v1/teachers/findall",
+     *     tags={"Teachers"},
+     *     summary="List all school teachers",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall(Request $request)
     {
         return response([
@@ -181,6 +215,15 @@ class TeacherController extends Controller
             'data' => $this->find_teacher_data(),
         ], 200);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/teachers/find/{id}",
+     *     tags={"Teachers"},
+     *     summary="Fetch single s`chool teacher entity",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = User::find($id);
@@ -198,6 +241,15 @@ class TeacherController extends Controller
             'data' => $data,
         ], 200);
     }
+
+        /**
+     * @OA\Post(
+     *     path="/pci/api/v1/teachers/teacher/subjects",
+     *     tags={"Teachers"},
+     *     summary="List all teacher subjects",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function t_subject(Request $request)
     {
         if( !Auth::user()->is_super && !Auth::user()->is_admin )

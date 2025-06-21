@@ -23,6 +23,14 @@ use App\Mail\Code;
 
 class FormStreamController extends Controller
 {
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/forms-streams/add",
+     *     tags={"Form streams"},
+     *     summary="Add form stream",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super )
@@ -68,6 +76,15 @@ class FormStreamController extends Controller
             ], 400);
         }
     }
+
+         /**
+     * @OA\Post(
+     *     path="/pci/api/v1/forms-streams/edit/{id}",
+     *     tags={"Form streams"},
+     *     summary="Edit form stream",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super )
@@ -113,6 +130,15 @@ class FormStreamController extends Controller
             ], 400);
         }
     }
+
+         /**
+     * @OA\Post(
+     *     path="/pci/api/v1/forms-streams/drop/{id}",
+     *     tags={"Form streams"},
+     *     summary="Drop form stream",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         Formstream::find($id)->delete();
@@ -123,6 +149,14 @@ class FormStreamController extends Controller
         ], 200);
     }
     
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/forms-streams/findall",
+     *     tags={"Form streams"},
+     *     summary="Find all form streams",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall(Request $request)
     {
         return response([
@@ -131,6 +165,15 @@ class FormStreamController extends Controller
             'data' => $this->find_formstreams_data(),
         ], 200);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/forms-streams/find/{id}",
+     *     tags={"Form streams"},
+     *     summary="Find form stream",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = Formstream::find($id);

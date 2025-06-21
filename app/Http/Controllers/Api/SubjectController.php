@@ -24,6 +24,14 @@ use App\Mail\Code;
 
 class SubjectController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/subjects/add",
+     *     tags={"Subjects"},
+     *     summary="Add subject",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super )
@@ -69,6 +77,15 @@ class SubjectController extends Controller
             ], 400);
         }
     }
+
+        /**
+     * @OA\Post(
+     *     path="/pci/api/v1/subjects/edit/{id}",
+     *     tags={"Subjects"},
+     *     summary="Edit subject",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super )
@@ -114,6 +131,15 @@ class SubjectController extends Controller
             ], 400);
         }
     }
+
+        /**
+     * @OA\Post(
+     *     path="/pci/api/v1/subjects/drop/{id}",
+     *     tags={"Subjects"},
+     *     summary="Drop subject",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         // Subject::find($id)->delete();
@@ -123,7 +149,15 @@ class SubjectController extends Controller
             'errors' => [],
         ], 400);
     }
-    
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/subjects/unenroll/all/{id}",
+     *     tags={"Subjects"},
+     *     summary="Unenroll all enrollments for this subject",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function unenroll_all($id)
     {
         if(!Enrollment::where('subject', $id)->where('status', 'enrolled')->count())
@@ -141,6 +175,15 @@ class SubjectController extends Controller
             'data' => [],
         ], 200);
     }
+
+     /**
+     * @OA\Get(
+     *     path="/pci/api/v1/subjects/findall",
+     *     tags={"Subjects"},
+     *     summary="List all subjects",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall()
     {
         return response([
@@ -149,6 +192,15 @@ class SubjectController extends Controller
             'data' => $this->find_subjects_data(),
         ], 200);
     }
+
+      /**
+     * @OA\Get(
+     *     path="/pci/api/v1/subjects/by/student/{id}",
+     *     tags={"Subjects"},
+     *     summary="List all subjects for a student",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function bystudent($student)
     {
         return response([
@@ -168,6 +220,15 @@ class SubjectController extends Controller
         }
         return $subjects->toArray();
     }
+
+        /**
+     * @OA\Get(
+     *     path="/pci/api/v1/subjects/find/{id}",
+     *     tags={"Subjects"},
+     *     summary="Find a single subject",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = Subject::find($id);

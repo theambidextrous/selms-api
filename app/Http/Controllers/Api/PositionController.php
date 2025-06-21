@@ -24,6 +24,14 @@ use App\Mail\Code;
 
 class PositionController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/positions/add",
+     *     tags={"Positions"},
+     *     summary="Add position",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         $file_uuid = (string) Str::uuid();
@@ -85,6 +93,15 @@ class PositionController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/positions/edit/{id}",
+     *     tags={"Positions"},
+     *     summary="Edit position",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         $file_uuid = (string) Str::uuid();
@@ -146,6 +163,15 @@ class PositionController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/positions/drop/{id}",
+     *     tags={"Positions"},
+     *     summary="Drop position",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         Position::find($id)->delete();
@@ -156,6 +182,14 @@ class PositionController extends Controller
         ], 200);
     }
     
+       /**
+     * @OA\Get(
+     *     path="/pci/api/v1/positions/findall",
+     *     tags={"Positions"},
+     *     summary="List positions",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall(Request $request)
     {
         return response([
@@ -164,6 +198,14 @@ class PositionController extends Controller
             'data' => $this->find_positions_data(),
         ], 200);
     }
+       /**
+     * @OA\Get(
+     *     path="/pci/api/v1/positions/find/{id}",
+     *     tags={"Positions"},
+     *     summary="Find one position",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = Position::find($id);
