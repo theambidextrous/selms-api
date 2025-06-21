@@ -18,13 +18,321 @@
         }
     ],
     "paths": {
-        "/api/ping": {
+        "/pci/api/v1/users/signup": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create new application admin user",
+                "operationId": "ce8ad4a768c58b5d92cca9d2391ff1a9",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/users/update/info": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update application admin user info",
+                "operationId": "8e347f019f74b250a03f024434a60083",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/users/update/pwd": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update application admin user password",
+                "operationId": "8cfe070b108b737999ceaf461352343f",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/downloads/get/rpt/file/{file}": {
+            "post": {
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Stream a file stored on server",
+                "operationId": "730ecb31e0a72bd781c385b71accb5a1",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/users/signin": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Login user and generate bearer token",
+                "operationId": "46b1c1c2dc7f5b8e8da27269d00fd3a9",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/users/request/reset/{email}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Request the user password reset",
+                "operationId": "665e82c707f2d0240d77378701d7b222",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/users/verify/{code}/reset/{email}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Verify password reset otp",
+                "operationId": "e585b4a30f57c8748db81228a4301943",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/users/finish/reset": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Set new password for user",
+                "operationId": "1b37e050c9f3e281808c2724f526d1e3",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/administrators/add": {
+            "post": {
+                "tags": [
+                    "Administrators"
+                ],
+                "summary": "Add school administrator",
+                "operationId": "57ab699feddeebde5d9051ae4a471fb2",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/administrators/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Administrators"
+                ],
+                "summary": "Edit school administrator info",
+                "operationId": "7561dd3d00be56bf55705caf5465dca2",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/administrators/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Administrators"
+                ],
+                "summary": "Drop school administrator entity",
+                "operationId": "577bd61a8b31de051d3d7507c85ad73e",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/administrators/findall": {
             "get": {
                 "tags": [
-                    "General"
+                    "Administrators"
                 ],
-                "summary": "Check API health",
-                "operationId": "3f437063ed788368d1f56c7d978602eb",
+                "summary": "Fetch list of school administrators",
+                "operationId": "dea60a88628aafcc8cb66ac85903fd3f",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/administrators/find/{id}": {
+            "get": {
+                "tags": [
+                    "Administrators"
+                ],
+                "summary": "Fetch single school administrator entity",
+                "operationId": "a9c8071dc5f51eff494f19c9a49e4c7e",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/finances/add": {
+            "post": {
+                "tags": [
+                    "Finance"
+                ],
+                "summary": "Add school finance manager",
+                "operationId": "c3e13d7adce0fc5df753f92515880703",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/finances/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Finance"
+                ],
+                "summary": "Edit school finance manager",
+                "operationId": "b12b54579e1f84a1ee66905b46214909",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/finances/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Finance"
+                ],
+                "summary": "Drop school finance manager",
+                "operationId": "77117befe23435ca51bacdf743f5e1cf",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/finances/findall": {
+            "get": {
+                "tags": [
+                    "Finance"
+                ],
+                "summary": "List all school finance managers",
+                "operationId": "1f508a8fa396a28c8f5bba1612428070",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/finances/find/{id}": {
+            "get": {
+                "tags": [
+                    "Finance"
+                ],
+                "summary": "Fetch school finance manager entity",
+                "operationId": "92b356b2999fe6d5f98af74ad921cb5f",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/librarians/add": {
+            "post": {
+                "tags": [
+                    "Librarians"
+                ],
+                "summary": "Add school librarian",
+                "operationId": "5e6691cffbe148df5abcb6d79e65831d",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/librarians/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Librarians"
+                ],
+                "summary": "Edit school librarian info",
+                "operationId": "796ff6c436e673000df9e32cea811e3f",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/librarians/drop/{id}": {
+            "post": {
+                "tags": [
+                    "Librarians"
+                ],
+                "summary": "Drop school librarian entity",
+                "operationId": "921ffde931287d60251f29b5d22befa7",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/librarians/findall": {
+            "get": {
+                "tags": [
+                    "Librarians"
+                ],
+                "summary": "Fetch list of school librarians",
+                "operationId": "d636f4a64a85ff31dcd5901e18a46e36",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/librarians/find/{id}": {
+            "get": {
+                "tags": [
+                    "Librarians"
+                ],
+                "summary": "Fetch single school librarian entity",
+                "operationId": "0d8cbb227d55ff44268f2914e0158151",
                 "responses": {
                     "200": {
                         "description": "Success"
@@ -44,8 +352,24 @@
     },
     "tags": [
         {
-            "name": "General",
-            "description": "General"
+            "name": "Users",
+            "description": "Users"
+        },
+        {
+            "name": "Files",
+            "description": "Files"
+        },
+        {
+            "name": "Administrators",
+            "description": "Administrators"
+        },
+        {
+            "name": "Finance",
+            "description": "Finance"
+        },
+        {
+            "name": "Librarians",
+            "description": "Librarians"
         }
     ]
 }

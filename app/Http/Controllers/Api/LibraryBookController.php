@@ -30,10 +30,10 @@ class LibraryBookController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_lib )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -42,10 +42,10 @@ class LibraryBookController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             Librarybook::create($input);
@@ -59,16 +59,16 @@ class LibraryBookController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -76,10 +76,10 @@ class LibraryBookController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_lib )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -88,10 +88,10 @@ class LibraryBookController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             Librarybook::find($id)->update($input);
@@ -102,16 +102,16 @@ class LibraryBookController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function blend(Request $request)
@@ -119,10 +119,10 @@ class LibraryBookController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_lib )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -133,10 +133,10 @@ class LibraryBookController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $this->is_marked_out($input);
@@ -147,16 +147,16 @@ class LibraryBookController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data" . $e->getMessage(),
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function breturn(Request $request)
@@ -164,10 +164,10 @@ class LibraryBookController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_lib )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -175,10 +175,10 @@ class LibraryBookController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $this->is_marked_in($input);
@@ -189,16 +189,16 @@ class LibraryBookController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function blost(Request $request)
@@ -206,10 +206,10 @@ class LibraryBookController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_lib )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -217,10 +217,10 @@ class LibraryBookController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $this->is_marked_lost($input);
@@ -231,16 +231,16 @@ class LibraryBookController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)

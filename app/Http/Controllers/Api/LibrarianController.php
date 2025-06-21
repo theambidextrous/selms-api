@@ -23,15 +23,23 @@ use App\Mail\Code;
 
 class LibrarianController extends Controller
 {
+        /**
+     * @OA\Post(
+     *     path="/pci/api/v1/librarians/add",
+     *     tags={"Librarians"},
+     *     summary="Add school librarian",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -48,10 +56,10 @@ class LibrarianController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -63,20 +71,20 @@ class LibrarianController extends Controller
             if( User::where('email', $input['email'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Email address already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             $input['password'] = Hash::make($input['password']);
             $input['phone'] = $this->format_phone($input['phone']);
             if( User::where('phone', $input['phone'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Phone number already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             User::create($input);
             return response([
@@ -86,27 +94,35 @@ class LibrarianController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/librarians/edit/{id}",
+     *     tags={"Librarians"},
+     *     summary="Edit school librarian info",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -121,10 +137,10 @@ class LibrarianController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -150,18 +166,26 @@ class LibrarianController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
+        /**
+     * @OA\Post(
+     *     path="/pci/api/v1/librarians/drop/{id}",
+     *     tags={"Librarians"},
+     *     summary="Drop school librarian entity",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         User::find($id)->update([ 'is_active' => false ]);
@@ -172,6 +196,14 @@ class LibrarianController extends Controller
         ], 200);
     }
     
+      /**
+     * @OA\Get(
+     *     path="/pci/api/v1/librarians/findall",
+     *     tags={"Librarians"},
+     *     summary="Fetch list of school librarians",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall()
     {
         return response([
@@ -180,6 +212,15 @@ class LibrarianController extends Controller
             'data' => $this->find_libra_data(),
         ], 200);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/librarians/find/{id}",
+     *     tags={"Librarians"},
+     *     summary="Fetch single school librarian entity",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = User::find($id);

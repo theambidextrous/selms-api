@@ -30,10 +30,10 @@ class PositionController extends Controller
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -42,10 +42,10 @@ class PositionController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if( $request->hasfile('signature') )
@@ -55,10 +55,10 @@ class PositionController extends Controller
                 if( !in_array($exten, ['png','jpg']) )
                 {
                     return response([
-                        'status' => 201,
+                        'status' => 400,
                         'message' => 'Invalid image type. Use png or JPG files',
                         'data' => [],
-                    ], 403);
+                    ], 400);
                 }
                 $file_content_name = $file_uuid . '.' . $exten;
                 Storage::disk('local')
@@ -73,16 +73,16 @@ class PositionController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -91,10 +91,10 @@ class PositionController extends Controller
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -103,10 +103,10 @@ class PositionController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if( $request->hasfile('signature') )
@@ -116,10 +116,10 @@ class PositionController extends Controller
                 if( !in_array($exten, ['png','jpg']) )
                 {
                     return response([
-                        'status' => 201,
+                        'status' => 400,
                         'message' => 'Invalid image type. Use png or JPG files',
                         'data' => [],
-                    ], 403);
+                    ], 400);
                 }
                 $file_content_name = $file_uuid . '.' . $exten;
                 Storage::disk('local')
@@ -134,16 +134,16 @@ class PositionController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)

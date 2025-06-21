@@ -27,10 +27,10 @@ class ExpenseController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_fin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -40,19 +40,19 @@ class ExpenseController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if( !$this->has_current_trm() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Current term not set',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['term'] = $this->find_current_trm();
             Expense::create($input);
@@ -63,16 +63,16 @@ class ExpenseController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -80,10 +80,10 @@ class ExpenseController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_fin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -93,19 +93,19 @@ class ExpenseController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if( !$this->has_current_trm() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Current term not set',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['term'] = $this->find_current_trm();
             Expense::find($id)->update($input);
@@ -116,16 +116,16 @@ class ExpenseController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)

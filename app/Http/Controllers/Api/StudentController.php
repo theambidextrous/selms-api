@@ -35,10 +35,10 @@ class StudentController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -62,19 +62,19 @@ class StudentController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if( !$this->has_current_trm() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Current term not set',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['current_term'] = $this->find_current_trm();
             if( $request->hasfile('pic') )
@@ -84,10 +84,10 @@ class StudentController extends Controller
                 if( !in_array($exten, ['png','jpg']) )
                 {
                     return response([
-                        'status' => 201,
+                        'status' => 400,
                         'message' => 'Invalid image type. Use png or JPG files',
                         'data' => [],
-                    ], 403);
+                    ], 400);
                 }
                 $file_content_name = $file_uuid . '.' . $exten;
                 Storage::disk('local')
@@ -107,16 +107,16 @@ class StudentController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -125,10 +125,10 @@ class StudentController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -153,19 +153,19 @@ class StudentController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if( !$this->has_current_trm() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Current term not set',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['current_term'] = $this->find_current_trm();
             if( $request->hasfile('pic') )
@@ -175,10 +175,10 @@ class StudentController extends Controller
                 if( !in_array($exten, ['png','jpg']) )
                 {
                     return response([
-                        'status' => 201,
+                        'status' => 400,
                         'message' => 'Invalid image type. Use png or JPG files',
                         'data' => [],
-                    ], 403);
+                    ], 400);
                 }
                 $file_content_name = $file_uuid . '.' . $exten;
                 Storage::disk('local')
@@ -197,16 +197,16 @@ class StudentController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)
@@ -261,20 +261,20 @@ class StudentController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $validator = Validator::make($request->all(), [
             'adm' => 'required|string',
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Admission number is required',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         return response([
@@ -288,20 +288,20 @@ class StudentController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $validator = Validator::make($request->all(), [
             'form' => 'required|string',
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Form field is required',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         return response([

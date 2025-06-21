@@ -34,10 +34,10 @@ class SetupController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'A required field was not found',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $input = $req->all();
         $input['phone'] = $this->format_phone($input['phone']);
@@ -48,10 +48,10 @@ class SetupController extends Controller
             if( !in_array($exten, ['png','jpg']) )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Invalid image type. Use png or JPG files',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $file_content_name = $file_uuid . '.' . $exten;
             Storage::disk('local')

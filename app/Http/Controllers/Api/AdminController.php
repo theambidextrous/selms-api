@@ -22,29 +22,23 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
 use App\Mail\Code;
 
-/**
- * @OA\Info(
- *     title="My API",
- *     version="1.0.0"
- * )
- */
-
-/**
- * @OA\Get(
- *     path="/api/ping",
- *     tags={"General"},
- *     summary="Check API health",
- *     @OA\Response(response=200, description="Success")
- * )
- */
 class AdminController extends Controller
 {
     protected function abortIfForbidden() {
         $canSignUp = config('app.sign_up');
         if($canSignUp == false){
-            abort(403, 'Actions not available');
+            abort(400, 'Actions not available');
         }
     }
+
+/**
+ * @OA\Post(
+ *     path="/pci/api/v1/users/signup",
+ *     tags={"Users"},
+ *     summary="Create new application admin user",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
     public function signup(Request $request)
     {
         $this->abortIfForbidden();
@@ -79,10 +73,10 @@ class AdminController extends Controller
             if( User::where('email', $input['email'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Email address already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             $input['password'] = Hash::make($input['password']);
             $input['phone'] = $this->format_phone($input['phone']);
@@ -98,18 +92,27 @@ class AdminController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
+
+/**
+ * @OA\Post(
+ *     path="/pci/api/v1/users/update/info",
+ *     tags={"Users"},
+ *     summary="Update application admin user info",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
     public function update_info(Request $request)
     {
         $this->abortIfForbidden();
@@ -130,7 +133,7 @@ class AdminController extends Controller
                     'success' => false,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = true;
@@ -152,18 +155,27 @@ class AdminController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
+
+/**
+ * @OA\Post(
+ *     path="/pci/api/v1/users/update/pwd",
+ *     tags={"Users"},
+ *     summary="Update application admin user password",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
     public function update_pwd(Request $request)
     {
         try{
@@ -177,7 +189,7 @@ class AdminController extends Controller
                     'success' => false,
                     'message' => 'Passwords do not match',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['password'] = Hash::make($input['password']);
@@ -191,24 +203,41 @@ class AdminController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
+
+/**
+ * @OA\Post(
+ *     path="/pci/api/v1/downloads/get/rpt/file/{file}",
+ *     tags={"Files"},
+ *     summary="Stream a file stored on server",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
     public function stream($file)
     {
         $filename = ('app/cls'.$file);
         return response()->download(storage_path($filename), null, [], null);
     }
 
+/**
+ * @OA\Post(
+ *     path="/pci/api/v1/users/signin",
+ *     tags={"Users"},
+ *     summary="Login user and generate bearer token",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
     public function signin(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -221,7 +250,7 @@ class AdminController extends Controller
                 'success' => false,
                 'message' => "Invalid Email or password",
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $login = $request->validate([
             'email' => 'required|email',
@@ -230,10 +259,10 @@ class AdminController extends Controller
         if( !Auth::attempt( $login ) )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Invalid username or password. Try again",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $accessToken = Auth::user()->createToken('authToken')->accessToken;
         $user = Auth::user();
@@ -249,16 +278,24 @@ class AdminController extends Controller
             'data' => $user,
         ], 200);
     }
+ /**
+ * @OA\Post(
+ *     path="/pci/api/v1/users/request/reset/{email}",
+ *     tags={"Users"},
+ *     summary="Request the user password reset",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
     public function reqreset($email)
     {
         try{
             $user = User::where('email', $email)->count();
             if(!$user){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "There is no user with that email. Try again or create account",
                     'errors' => [],
-                ], 403); 
+                ], 400); 
             }
             Pcode::where('email', $email)->update(['used' => true]);
             $code = $this->createCode(6,1);
@@ -275,29 +312,39 @@ class AdminController extends Controller
                 ], 200); 
             }
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Error sending email",
                 'errors' => [],
-            ], 403); 
+            ], 400); 
             
         }catch( Exception $e){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => $e->getMessage(),
                 'errors' => [],
-            ], 403); 
+            ], 400); 
         }
     }
+
+/**
+ * @OA\Post(
+ *     path="/pci/api/v1/users/verify/{code}/reset/{email}",
+ *     tags={"Users"},
+ *     summary="Verify password reset otp",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
+
     public function verifyreset($code, $email)
     {
         try{
             if( $this->isExpired($code) )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Expired verification code",
                     'errors' => [],
-                ], 403); 
+                ], 400); 
             }
             $data = ['email' => $email, 'code' => $code ];
             $isValid = Pcode::where('email', $email)
@@ -319,16 +366,25 @@ class AdminController extends Controller
                 ], 200); 
             }
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Enter a valid verification code",
-            ], 403); 
+            ], 400); 
         }catch( Exception $e){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Invalid Access. No data",
-            ], 403); 
+            ], 400); 
         }
     }
+
+/**
+ * @OA\Post(
+ *     path="/pci/api/v1/users/finish/reset",
+ *     tags={"Users"},
+ *     summary="Set new password for user",
+ *     @OA\Response(response=200, description="Success")
+ * )
+ */
     public function finishreset(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -342,7 +398,7 @@ class AdminController extends Controller
                 'success' => false,
                 'message' => 'Passwords do no match',
                 'errors' => $validator->errors()
-            ], 403);
+            ], 400);
         }
         $email = $request->get('email');
         $user = User::where('email', $email)->first();
@@ -356,10 +412,10 @@ class AdminController extends Controller
             ], 200);
         }
         return response([
-            'status' => 201,
+            'status' => 400,
             'message' => 'Data error. We could not updte password',
             'errors' => []
-        ], 403);
+        ], 400);
     }
     protected function createCode($length = 20, $t = 0) {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';

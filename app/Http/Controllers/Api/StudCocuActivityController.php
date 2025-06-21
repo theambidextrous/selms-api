@@ -31,10 +31,10 @@ class StudCocuActivityController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -44,20 +44,20 @@ class StudCocuActivityController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $student_meta = Student::where('admission', $input['student'])->first();
             if(is_null($student_meta))
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'No student found for admission number below',
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             $input['student'] = $student_meta->id;
             Studentsport::create($input);
@@ -68,16 +68,16 @@ class StudCocuActivityController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -86,10 +86,10 @@ class StudCocuActivityController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -99,10 +99,10 @@ class StudCocuActivityController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             Studentsport::find($id)->update($input);
@@ -113,16 +113,16 @@ class StudCocuActivityController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)

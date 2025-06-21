@@ -29,10 +29,10 @@ class TeacherController extends Controller
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -49,10 +49,10 @@ class TeacherController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -64,20 +64,20 @@ class TeacherController extends Controller
             if( User::where('email', $input['email'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Email address already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             $input['password'] = Hash::make($input['password']);
             $input['phone'] = $this->format_phone($input['phone']);
             if( User::where('phone', $input['phone'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Phone number already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             User::create($input);
             return response([
@@ -87,16 +87,16 @@ class TeacherController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -104,10 +104,10 @@ class TeacherController extends Controller
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -122,10 +122,10 @@ class TeacherController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -151,16 +151,16 @@ class TeacherController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)
@@ -203,10 +203,10 @@ class TeacherController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -214,10 +214,10 @@ class TeacherController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Select a teacher.',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $teacher = $request->get('teacher');            
             $data_ = Timetable::select('subject')->where('teacher', $teacher)->get();
@@ -252,16 +252,16 @@ class TeacherController extends Controller
             
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     protected function format_phone($phone)

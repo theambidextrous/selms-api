@@ -30,6 +30,7 @@ class IndexController extends Controller
     }
     public function index()
     {
+        return redirect('api/documentation');
         $chart_data = [['Gate', 'Door', 'Window'], [0,989,1078]];
         return view('index', ['chart' => $this->make_chart($chart_data)]);
     }

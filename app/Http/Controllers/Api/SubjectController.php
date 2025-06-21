@@ -29,10 +29,10 @@ class SubjectController extends Controller
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -42,10 +42,10 @@ class SubjectController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['label'] = ucwords(explode('form', strtolower($input['name']))[0]) . ' Form ' . $input['form'];
@@ -57,16 +57,16 @@ class SubjectController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -74,10 +74,10 @@ class SubjectController extends Controller
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -87,10 +87,10 @@ class SubjectController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['label'] = ucwords(explode('form', strtolower($input['name']))[0]) . ' Form ' . $input['form'];
@@ -102,26 +102,26 @@ class SubjectController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)
     {
         // Subject::find($id)->delete();
         return response([
-            'status' => 201,
+            'status' => 400,
             'message' => "Subject deletion error. Permission denied",
             'errors' => [],
-        ], 403);
+        ], 400);
     }
     
     public function unenroll_all($id)
@@ -129,10 +129,10 @@ class SubjectController extends Controller
         if(!Enrollment::where('subject', $id)->where('status', 'enrolled')->count())
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "No enrollments found for the selected subject",
                 'data' => [],
-            ], 403);
+            ], 400);
         }
         Enrollment::where('subject', $id)->where('status', 'enrolled')->delete();
         return response([

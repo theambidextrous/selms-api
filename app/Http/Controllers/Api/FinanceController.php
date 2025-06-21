@@ -23,15 +23,23 @@ use App\Mail\Code;
 
 class FinanceController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/finances/add",
+     *     tags={"Finance"},
+     *     summary="Add school finance manager",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -48,10 +56,10 @@ class FinanceController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -63,20 +71,20 @@ class FinanceController extends Controller
             if( User::where('email', $input['email'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Email address already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             $input['password'] = Hash::make($input['password']);
             $input['phone'] = $this->format_phone($input['phone']);
             if( User::where('phone', $input['phone'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Phone number already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             User::create($input);
             return response([
@@ -86,27 +94,36 @@ class FinanceController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/finances/edit/{id}",
+     *     tags={"Finance"},
+     *     summary="Edit school finance manager",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -121,10 +138,10 @@ class FinanceController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -150,18 +167,27 @@ class FinanceController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/finances/drop/{id}",
+     *     tags={"Finance"},
+     *     summary="Drop school finance manager",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         User::find($id)->update([ 'is_active' => false ]);
@@ -172,6 +198,14 @@ class FinanceController extends Controller
         ], 200);
     }
     
+        /**
+     * @OA\Get(
+     *     path="/pci/api/v1/finances/findall",
+     *     tags={"Finance"},
+     *     summary="List all school finance managers",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall(Request $request)
     {
         return response([
@@ -180,6 +214,15 @@ class FinanceController extends Controller
             'data' => $this->find_finance_data(),
         ], 200);
     }
+
+            /**
+     * @OA\Get(
+     *     path="/pci/api/v1/finances/find/{id}",
+     *     tags={"Finance"},
+     *     summary="Fetch school finance manager entity",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = User::find($id);

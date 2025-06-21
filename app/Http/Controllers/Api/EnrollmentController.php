@@ -29,10 +29,10 @@ class EnrollmentController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -43,38 +43,38 @@ class EnrollmentController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if( !$this->has_current_trm() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Current term not set',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['year'] = $this->find_current_trm_yr();
             $student_meta = Student::where('admission', trim($input['student']))->first();
             if(is_null($student_meta))
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Student not found. Try gain',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['student'] = $student_meta->id;
             if( !$this->is_enrollable_stud_sub($student_meta->form, $input['subject']) )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Enrollment failed. Make sure you are selecting the correct subject for the student',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             Enrollment::create($input);
             return response([
@@ -84,16 +84,16 @@ class EnrollmentController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function unenroll(Request $request)
@@ -101,10 +101,10 @@ class EnrollmentController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -113,20 +113,20 @@ class EnrollmentController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $student_meta = Student::where('admission', trim($input['student']))->first();
             if(is_null($student_meta))
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Student not found. Try gain',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['student'] = $student_meta->id;
             Enrollment::where('student', $input['student'])
@@ -138,16 +138,16 @@ class EnrollmentController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -155,10 +155,10 @@ class EnrollmentController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -169,10 +169,10 @@ class EnrollmentController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['year'] = $this->find_current_trm_yr();
@@ -184,16 +184,16 @@ class EnrollmentController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
     public function drop($id)
@@ -223,10 +223,10 @@ class EnrollmentController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Please select year, subject and status',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         $data = Enrollment::where('year', $input['year'])

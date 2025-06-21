@@ -32,10 +32,10 @@ class ReportController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please enter loan number and dates correctly',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $from_date = date('Y-m-d', strtotime($req->get('from_date')));
         $to_date = date('Y-m-d', strtotime($req->get('to_date')));
@@ -48,18 +48,18 @@ class ReportController extends Controller
         if( $to_date < $from_date )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => '"Start date" cannot be greater than "End date"',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         if(!strlen($req->get('from_date')) || !strlen($req->get('to_date')))
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please select valid dates.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $input = $req->all();
         $p = Repayment::where('loan', $input['loan'])
@@ -92,10 +92,10 @@ class ReportController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please enter loan number and dates correctly',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $from_date = date('Y-m-d', strtotime($req->get('from_date')));
         $to_date = date('Y-m-d', strtotime($req->get('to_date')));
@@ -108,18 +108,18 @@ class ReportController extends Controller
         if( $to_date < $from_date )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => '"Start date" cannot be greater than "End date"',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         if(!strlen($req->get('from_date')) || !strlen($req->get('to_date')))
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please select valid dates.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $input = $req->all();
         $p = Repayment::where('loan', $input['loan'])
@@ -162,10 +162,10 @@ class ReportController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please enter member number and dates correctly',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $from_date = date('Y-m-d', strtotime($req->get('from_date')));
         $to_date = date('Y-m-d', strtotime($req->get('to_date')));
@@ -176,18 +176,18 @@ class ReportController extends Controller
         if( $to_date < $from_date )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => '"Start date" cannot be greater than "End date"',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         if(!strlen($req->get('from_date')) || !strlen($req->get('to_date')))
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please select valid dates.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $input = $req->all();
         $p = Contribution::where('member', $input['member'])
@@ -218,10 +218,10 @@ class ReportController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please enter member number and dates correctly',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $from_date = date('Y-m-d', strtotime($req->get('from_date')));
         $to_date = date('Y-m-d', strtotime($req->get('to_date')));
@@ -232,18 +232,18 @@ class ReportController extends Controller
         if( $to_date < $from_date )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => '"Start date" cannot be greater than "End date"',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         if(!strlen($req->get('from_date')) || !strlen($req->get('to_date')))
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Invalid statement data. Please select valid dates.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $input = $req->all();
         $p = Contribution::where('member', $input['member'])

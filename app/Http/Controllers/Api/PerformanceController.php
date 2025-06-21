@@ -46,10 +46,10 @@ class PerformanceController extends Controller
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -61,10 +61,10 @@ class PerformanceController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             if(!strlen($input['remark']))
@@ -74,18 +74,18 @@ class PerformanceController extends Controller
             if( !$this->has_current_trm() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Current term not set',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             if( intval($input['mark']) > 100 )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Invalid marks',
                     'data' => [],
-                ], 403);
+                ], 400);
             }
             $input['term'] = $this->find_current_trm();
             $stud_meta = Student::find($input['student']);
@@ -98,16 +98,16 @@ class PerformanceController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
     public function edit(Request $request, $id)
@@ -165,20 +165,20 @@ class PerformanceController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Select term and enter admission number',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         $student_m = Student::where('admission', $input['student'])->first();
         if(is_null($student_m))
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'No student was found with that admission number',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $return_data = [];
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
@@ -207,20 +207,20 @@ class PerformanceController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Select term and enter admission number',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         $student_m = Student::where('admission', $input['student'])->first();
         if(is_null($student_m))
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'No student was found with that admission number',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $return_data = [];
         if( !Auth::user()->is_super && !Auth::user()->is_admin )

@@ -49,10 +49,10 @@ class PerfByStreamController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Form error. Select term and stream',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
@@ -60,7 +60,7 @@ class PerfByStreamController extends Controller
                 'status' => 200,
                 'message' => 'No records found. Permission denied',
                 'data' => [],
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         $ids = Student::select('id')->where('stream', $input['stream'])->get();
@@ -104,19 +104,19 @@ class PerfByStreamController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Error. Missing info',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Error. Permission denied',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $stream_meta = Formstream::find($input['stream']);
         $term_meta = Term::find($input['term']);
@@ -178,18 +178,18 @@ class PerfByStreamController extends Controller
         ]);
         if( $validator->fails() ){
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Error. Missing info',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         if( !Auth::user()->is_super && !Auth::user()->is_admin )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Error. Permission denied',
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
         $input = $request->all();
         $allstudents = Student::where('stream', $input['stream'])->get();

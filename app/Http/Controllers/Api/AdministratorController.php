@@ -23,15 +23,23 @@ use App\Mail\Code;
 
 class AdministratorController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/pci/api/v1/administrators/add",
+     *     tags={"Administrators"},
+     *     summary="Add school administrator",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function add(Request $request)
     {
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -48,10 +56,10 @@ class AdministratorController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -63,20 +71,20 @@ class AdministratorController extends Controller
             if( User::where('email', $input['email'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Email address already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             $input['password'] = Hash::make($input['password']);
             $input['phone'] = $this->format_phone($input['phone']);
             if( User::where('phone', $input['phone'])->count() )
             {
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => "Phone number already used",
                     'errors' => [],
-                ], 403);
+                ], 400);
             }
             User::create($input);
             return response([
@@ -86,27 +94,36 @@ class AdministratorController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/administrators/edit/{id}",
+     *     tags={"Administrators"},
+     *     summary="Edit school administrator info",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function edit(Request $request, $id)
     {
         if( !Auth::user()->is_super )
         {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => 'Permission Denied. Only super admins allowed.',
                 'errors' => $validator->errors()->all(),
-            ], 403);
+            ], 400);
         }
         try{
             $validator = Validator::make($request->all(), [
@@ -121,10 +138,10 @@ class AdministratorController extends Controller
             ]);
             if( $validator->fails() ){
                 return response([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'A required field was not found',
                     'errors' => $validator->errors()->all(),
-                ], 403);
+                ], 400);
             }
             $input = $request->all();
             $input['is_super'] = false;
@@ -150,18 +167,28 @@ class AdministratorController extends Controller
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Server error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         } catch (PDOException $e) {
             return response([
-                'status' => 201,
+                'status' => 400,
                 'message' => "Db error. Invalid data",
                 'errors' => [],
-            ], 403);
+            ], 400);
         }
     }
+
+
+      /**
+     * @OA\Post(
+     *     path="/pci/api/v1/administrators/drop/{id}",
+     *     tags={"Administrators"},
+     *     summary="Drop school administrator entity",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function drop($id)
     {
         User::find($id)->update([ 'is_active' => false ]);
@@ -171,7 +198,16 @@ class AdministratorController extends Controller
             'errors' => [],
         ], 200);
     }
-    
+
+
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/administrators/findall",
+     *     tags={"Administrators"},
+     *     summary="Fetch list of school administrators",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function findall()
     {
         return response([
@@ -180,6 +216,15 @@ class AdministratorController extends Controller
             'data' => $this->find_admins_data(),
         ], 200);
     }
+
+     /**
+     * @OA\Get(
+     *     path="/pci/api/v1/administrators/find/{id}",
+     *     tags={"Administrators"},
+     *     summary="Fetch single school administrator entity",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
     public function find($id)
     {
         $data = User::find($id);
