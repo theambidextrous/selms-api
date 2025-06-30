@@ -40,10 +40,6 @@ class TermController extends Controller
                 'start' => 'required|string',
                 'end' => 'required|string',
                 'is_current' => 'required',
-                'f1_fee' => 'required|string',
-                'f2_fee' => 'required|string',
-                'f3_fee' => 'required|string',
-                'f4_fee' => 'required|string',
             ]);
             if( $validator->fails() ){
                 return response([
@@ -55,6 +51,10 @@ class TermController extends Controller
             $input = $request->all();
             $input['label'] = trim(strtoupper(str_replace(' ', '', $input['label'])));
             $this->sudo_rm_current_term($input);
+            $input['f1_fee'] = 0;
+            $input['f2_fee'] = 0;
+            $input['f3_fee'] = 0;
+            $input['f4_fee'] = 0;
             $trm = Term::create($input)->id;
             $this->sudo_update_stud_term($input, $trm);
             return response([

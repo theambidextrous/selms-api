@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Api\FormStreamController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\SubjectController;
+use App\Http\Controllers\Api\TranslationsController;
 use App\Http\Controllers\Api\TermController;
 use App\Http\Controllers\Api\TimeTableController;
 use App\Http\Controllers\Api\AttendanceController;
@@ -161,6 +162,15 @@ Route::prefix('/subjects')->group( function() {
         Route::get('/find/{id}', [SubjectController::class, 'find']);
         Route::get('/findall', [SubjectController::class, 'findall']);
         Route::get('/by/student/{id}', [SubjectController::class, 'bystudent']);
+    });
+});
+/** Translations */
+Route::prefix('/translations')->group( function() {
+    Route::get('/findall', [TranslationsController::class, 'findall']);
+    Route::middleware('auth:api')->group( function(){
+        Route::post('/add', [TranslationsController::class, 'add']);
+        Route::post('/edit/{id}', [TranslationsController::class, 'edit']);
+        Route::get('/find/{id}', [TranslationsController::class, 'find']);
     });
 });
 /** Terms */

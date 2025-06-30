@@ -69,7 +69,7 @@ class TeacherController extends Controller
             $input['is_fin'] = false;
             $input['is_teacher'] = true;
             $input['is_parent'] = false;
-            if( User::where('email', $input['email'])->count() )
+            if( User::where('email', $input['email'])->exists() )
             {
                 return response([
                     'status' => 400,
@@ -79,7 +79,7 @@ class TeacherController extends Controller
             }
             $input['password'] = Hash::make($input['password']);
             $input['phone'] = $this->format_phone($input['phone']);
-            if( User::where('phone', $input['phone'])->count() )
+            if( User::where('phone', $input['phone'])->exists() )
             {
                 return response([
                     'status' => 400,
@@ -152,7 +152,7 @@ class TeacherController extends Controller
             $input['is_teacher'] = true;
             $input['is_parent'] = false;
             $input['phone'] = $this->format_phone($input['phone']);
-            if(!strlen($input['password']))
+            if(strlen($input['password']) == 0 || strlen($input['c_password']) == 0)
             {
                 unset($input['password']);
             }

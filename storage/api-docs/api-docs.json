@@ -913,6 +913,62 @@
                     }
                 }
             }
+        },
+        "/pci/api/v1/translations/add": {
+            "post": {
+                "tags": [
+                    "Translations"
+                ],
+                "summary": "Add language translation",
+                "operationId": "509adf7a3fa70336d8802469a8e28f2e",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/translations/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Translations"
+                ],
+                "summary": "Edit language translation",
+                "operationId": "0234dfa57c1932a404346e97318419a8",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/translations/findall": {
+            "get": {
+                "tags": [
+                    "Translations"
+                ],
+                "summary": "List language translations",
+                "operationId": "5341a0842219c53af26ba1805e524eac",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/translations/find/{edit}": {
+            "get": {
+                "tags": [
+                    "Translations"
+                ],
+                "summary": "Fetch language translation",
+                "operationId": "c3c4f51dcae3e7b783ffb229b9685da1",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -972,6 +1028,10 @@
         {
             "name": "Teachers",
             "description": "Teachers"
+        },
+        {
+            "name": "Translations",
+            "description": "Translations"
         }
     ]
 }

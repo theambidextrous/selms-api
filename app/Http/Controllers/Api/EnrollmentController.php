@@ -17,6 +17,7 @@ use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\Term;
 use App\Models\Subject;
+use App\Models\Form;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -280,9 +281,12 @@ class EnrollmentController extends Controller
             $p_meta = Student::find($_data['student']);
             if(!is_null($p_meta))
             {
-                $_data['slabel'] = $p_meta->fname . ' ' . $p_meta->lname . '(Adm: ' . $p_meta->admission . ')';
+                $_data['student_label'] = $p_meta;
+
             }
-            $_data['dlabel'] = date('m/d/Y', strtotime($_data['created_at']));
+            $_data['enrollment_date_label'] = date('m/d/Y', strtotime($_data['created_at']));
+            $_data['subject_label'] = Subject::find($_data['subject']);
+            $_data['form_label'] = Form::find($p_meta->form);
             array_push($rtn, $_data);
         endforeach;
         return $rtn;

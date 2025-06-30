@@ -51,23 +51,22 @@ class StudentController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'admission' => 'required|string',
-                'date_of_admission' => 'required|string',
                 'fname' => 'required|string',
                 'lname' => 'required|string',
                 'address' => 'required|string',
                 'city' => 'required|string',
                 'county' => 'required|string',
                 'zip' => 'required|string',
-                // 'parent' => 'required|string',
+                'parent' => 'string',
                 'form' => 'required|string|not_in:nn',
                 'stream' => 'required|string|not_in:nn',
                 'expected_grad' => 'required|string',
                 'gender' => 'required|string|not_in:nn',
                 'dob' => 'required|string',
                 'birth_cert' => 'required|string',
-                'kcpe' => 'required|string',
-                // 'huduma_no' => 'required|string',
+                'kcpe' => '',
+                'huduma_no' => '',
+                'nemis_no' => '',
             ]);
             if( $validator->fails() ){
                 return response([
@@ -106,7 +105,11 @@ class StudentController extends Controller
             {
                 unset($input['pic']);
             }
+            $input['admission'] = date("Ymd");
+            $input['date_of_admission'] = date("Y-m-d");
             $user = Student::create($input)->id;
+            $admission = $input['admission'] . '00' . $user;
+            Student::find($user)->update(['admission' => $admission]);
             $this->enroll_default_subjects($user, $input['current_term'],  $input['form']);
             $this->create_default_fee($user, $input['current_term'], $input['form']);
             return response([
@@ -150,24 +153,22 @@ class StudentController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'admission' => 'required|string',
-                'date_of_admission' => 'required|string',
                 'fname' => 'required|string',
                 'lname' => 'required|string',
                 'address' => 'required|string',
                 'city' => 'required|string',
                 'county' => 'required|string',
                 'zip' => 'required|string',
-                // 'parent' => 'required|string',
+                'parent' => 'string',
                 'form' => 'required|string|not_in:nn',
                 'stream' => 'required|string|not_in:nn',
                 'expected_grad' => 'required|string',
                 'gender' => 'required|string|not_in:nn',
                 'dob' => 'required|string',
                 'birth_cert' => 'required|string',
-                'kcpe' => 'required|string',
-                // 'nemis_no' => 'required|string',
-                // 'huduma_no' => 'required|string',
+                'kcpe' => '',
+                'huduma_no' => '',
+                'nemis_no' => '',
             ]);
             if( $validator->fails() ){
                 return response([
@@ -384,12 +385,7 @@ class StudentController extends Controller
     }
     protected function has_current_trm()
     {
-        $d = Term::where('is_current', true)->count();
-        if( $d )
-        {
-            return true;
-        }
-        return false;
+        return Term::where('is_current', true)->count() > 0;
     }
     protected function find_current_trm()
     {
@@ -407,7 +403,7 @@ class StudentController extends Controller
             'term' => $term,
             'narration' => 'School fees for ' . $d->label . ' of ' . $d->year, 
             'student' => $stud,
-            'fee' => -(intval($this->extract_fee($d, $form))),
+            'fee' => 0,
         ];
         Fee::create($fee_meta);
         return true;

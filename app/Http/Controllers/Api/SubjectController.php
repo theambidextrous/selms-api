@@ -44,6 +44,7 @@ class SubjectController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
+                'tution' => 'required|string',
                 'form' => 'required|string',
                 'name' => 'required|string',
                 'pass_mark' => 'required|string',

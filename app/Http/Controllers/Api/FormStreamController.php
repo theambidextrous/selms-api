@@ -56,6 +56,15 @@ class FormStreamController extends Controller
                 ], 400);
             }
             $input = $request->all();
+            $input['name'] = trim(strtoupper(str_replace(' ','_', $input['name'])));
+            $isValid = Form::where('id', $input['form'])->exists();
+            if(!$isValid){
+                return response([
+                    'status' => 400,
+                    'message' => 'Invalid value ' . $input['form'],
+                    'errors' => null,
+                ], 400);
+            }
             Formstream::create($input);
             return response([
                 'status' => 200,
