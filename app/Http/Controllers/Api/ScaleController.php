@@ -35,7 +35,8 @@ class ScaleController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'mark' => 'required|string',
+                'min_mark' => 'required|integer',
+                'max_mark' => 'required|integer',
                 'grade' => 'required|string',
                 'form' => 'required|string|not_in:nn',
             ]);
@@ -47,6 +48,14 @@ class ScaleController extends Controller
                 ], 400);
             }
             $input = $request->all();
+            if($input['max_mark'] < $input['min_mark'] ){
+                return response([
+                    'status' => 400,
+                    'message' => 'Upper limit must be greater than lower limit',
+                    'errors' => $validator->errors()->all(),
+                ], 400);
+            }
+            $input['grade'] = strtoupper($input['grade']);
             Scale::create($input);
             return response([
                 'status' => 200,
@@ -79,7 +88,8 @@ class ScaleController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'mark' => 'required|string',
+                'min_mark' => 'required|integer',
+                'max_mark' => 'required|integer',
                 'grade' => 'required|string',
                 'form' => 'required|string|not_in:nn',
             ]);
@@ -91,6 +101,14 @@ class ScaleController extends Controller
                 ], 400);
             }
             $input = $request->all();
+            if($input['max_mark'] < $input['min_mark'] ){
+                return response([
+                    'status' => 400,
+                    'message' => 'Upper limit must be greater than lower limit',
+                    'errors' => $validator->errors()->all(),
+                ], 400);
+            }
+            $input['grade'] = strtoupper($input['grade']);
             Scale::find($id)->update($input);
             return response([
                 'status' => 200,

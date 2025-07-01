@@ -14,6 +14,9 @@ class Fee extends Model
         'narration',
         'student',
         'fee',
+        'subject',
+        'type',
+        'cleared'
     ];
 
 }

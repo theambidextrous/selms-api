@@ -15,6 +15,7 @@ class Subject extends Model
         'label',
         'pass_mark',
         'max_score',
+        'tution_fee',
     ];
 
 }

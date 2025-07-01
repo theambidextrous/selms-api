@@ -18,6 +18,7 @@ use App\Models\Student;
 use App\Models\Term;
 use App\Models\Subject;
 use App\Models\Form;
+use App\Models\Fee;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -37,7 +38,6 @@ class EnrollmentController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                // 'year' => 'required|string',
                 'subject' => 'required|string',
                 'student' => 'required|string',
                 'status' => 'required|string',
@@ -77,7 +77,26 @@ class EnrollmentController extends Controller
                     'data' => [],
                 ], 400);
             }
+            $alreadyEnrolled = Enrollment::where('student', $student_meta->id)->where('subject', $input['subject'])->exists();
+            if($alreadyEnrolled){
+                return response([
+                    'status' => 400,
+                    'message' => 'Enrollment failed. Student already enrolled',
+                    'data' => [],
+                ], 400);
+            }
+
             Enrollment::create($input);
+            $_subject = Subject::find($input['subject']);
+            $term_data = $this->find_current_term();
+            $fee_meta = [
+                'term' => $term_data->id,
+                'narration' => 'Tution fees for ' . $_subject->name, 
+                'student' => $student_meta->id,
+                'fee' => $_subject->tution_fee,
+                'subject' => $_subject->id,
+            ];
+            Fee::create($fee_meta);
             return response([
                 'status' => 200,
                 'message' => 'Success. Done',
@@ -132,6 +151,13 @@ class EnrollmentController extends Controller
             $input['student'] = $student_meta->id;
             Enrollment::where('student', $input['student'])
                 ->where('subject', $input['subject'])->delete();
+
+            Fee::where('subject', $input['subject'])
+                ->where('student', $input['student'])
+                ->where('cleared', 0)
+                ->where('type', 'Tution')
+                ->delete();
+                
             return response([
                 'status' => 200,
                 'message' => 'Success. Done',
@@ -177,6 +203,8 @@ class EnrollmentController extends Controller
             }
             $input = $request->all();
             $input['year'] = $this->find_current_trm_yr();
+            $student_meta = Student::where('admission', trim($input['student']))->first();
+            $input['student'] = $student_meta->id;
             Enrollment::find($id)->update($input);
             return response([
                 'status' => 200,
@@ -187,7 +215,7 @@ class EnrollmentController extends Controller
             return response([
                 'status' => 400,
                 'message' => "Server error. Invalid data",
-                'errors' => [],
+                'errors' => ['error' => $e->getMessage()],
             ], 400);
         } catch (PDOException $e) {
             return response([
@@ -302,13 +330,19 @@ class EnrollmentController extends Controller
     }
     protected function find_current_trm_yr()
     {
+        return $this->find_current_term()->year;
+    }
+
+    protected function find_current_term()
+    {
         $d = Term::where('is_current', true)->first();
         if( is_null($d) )
         {
-            return date('Y', strtotime('now'));
+            throw new \Exception("No current term set");
         }
-        return $d->year;
+        return $d;
     }
+
     protected function is_enrollable_stud_sub($stud_form, $subject)
     {
         $sub_form = Subject::find($subject)->form;

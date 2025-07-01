@@ -10,7 +10,8 @@ class Scale extends Model
     use HasFactory;
     
     protected $fillable = [
-        'mark',
+        'min_mark',
+        'max_mark',
         'grade',
         'form',
     ];

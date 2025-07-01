@@ -44,7 +44,7 @@ class SubjectController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'tution' => 'required|string',
+                'tution_fee' => 'required|decimal:2',
                 'form' => 'required|string',
                 'name' => 'required|string',
                 'pass_mark' => 'required|string',
@@ -99,6 +99,7 @@ class SubjectController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
+                'tution_fee' => 'required|decimal:2',
                 'form' => 'required|string',
                 'name' => 'required|string',
                 'pass_mark' => 'required|string',

@@ -111,7 +111,6 @@ class StudentController extends Controller
             $admission = $input['admission'] . '00' . $user;
             Student::find($user)->update(['admission' => $admission]);
             $this->enroll_default_subjects($user, $input['current_term'],  $input['form']);
-            $this->create_default_fee($user, $input['current_term'], $input['form']);
             return response([
                 'status' => 200,
                 'message' => 'Success. Account created',
@@ -396,18 +395,6 @@ class StudentController extends Controller
         }
         return $d->id;
     }
-    protected function create_default_fee($stud, $term, $form)
-    {
-        $d = Term::find($term);
-        $fee_meta = [
-            'term' => $term,
-            'narration' => 'School fees for ' . $d->label . ' of ' . $d->year, 
-            'student' => $stud,
-            'fee' => 0,
-        ];
-        Fee::create($fee_meta);
-        return true;
-    }
     protected function enroll_default_subjects($stud, $term, $form)
     {
         $d = Term::find($term);
@@ -419,6 +406,14 @@ class StudentController extends Controller
                 'subject' => $subject['id'],
                 'student' => $stud,
             ]);
+            $fee_meta = [
+                'term' => $term,
+                'narration' => 'Tution fees for ' . $subject['name'], 
+                'student' => $stud,
+                'fee' => $subject['tution_fee'],
+                'subject' => $subject['id'],
+            ];
+            Fee::create($fee_meta);
         endforeach;
     }
     protected function find_form_subjects($form)
