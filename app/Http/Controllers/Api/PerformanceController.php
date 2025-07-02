@@ -56,13 +56,13 @@ class PerformanceController extends Controller
                 'student' => 'required|string|not_in:nn',
                 'subject' => 'required|string|not_in:nn',
                 'group' => 'required|string|not_in:nn',
-                'mark' => 'required|string',
-                // 'remark' => 'required|string',
+                'mark' => 'required|integer',
+                'remark' => 'string',
             ]);
             if( $validator->fails() ){
                 return response([
                     'status' => 400,
-                    'message' => 'A required field was not found',
+                    'message' => 'Error: Invalid field(s) detected',
                     'errors' => $validator->errors()->all(),
                 ], 400);
             }
@@ -79,7 +79,7 @@ class PerformanceController extends Controller
                     'data' => [],
                 ], 400);
             }
-            if( intval($input['mark']) > 100 )
+            if( intval($input['mark']) > 100 || intval($input['mark']) < 0 )
             {
                 return response([
                     'status' => 400,
@@ -89,6 +89,17 @@ class PerformanceController extends Controller
             }
             $input['term'] = $this->find_current_trm();
             $stud_meta = Student::find($input['student']);
+            $isValidSubject = Enrollment::where('student', $input['student'])
+                ->where('subject', $input['subject'])
+                ->where('status', 'enrolled')
+                ->exists();
+            if(!$isValidSubject){
+                return response([
+                    'status' => 400,
+                    'message' => 'Invalid subject, learner not enrolled',
+                    'data' => [],
+                ], 400);
+            }
             $input['grade'] = $this->extract_g_scale($input['mark'], $stud_meta->form);
             Performance::create($input);
             return response([
@@ -112,7 +123,83 @@ class PerformanceController extends Controller
     }
     public function edit(Request $request, $id)
     {
-        
+        if( !Auth::user()->is_super && !Auth::user()->is_admin )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => [],
+            ], 400);
+        }
+        try{
+            $validator = Validator::make($request->all(), [
+                'student' => 'required|string|not_in:nn',
+                'subject' => 'required|string|not_in:nn',
+                'group' => 'required|string|not_in:nn',
+                'mark' => 'required|integer',
+                'remark' => 'string',
+            ]);
+            if( $validator->fails() ){
+                return response([
+                    'status' => 400,
+                    'message' => 'Error: Invalid field(s) detected',
+                    'errors' => $validator->errors()->all(),
+                ], 400);
+            }
+            $input = $request->all();
+            if(!strlen($input['remark']))
+            {
+                $input['remark'] = 'n/a';
+            }
+            if( !$this->has_current_trm() )
+            {
+                return response([
+                    'status' => 400,
+                    'message' => 'Current term not set',
+                    'data' => [],
+                ], 400);
+            }
+            if( intval($input['mark']) > 100 || intval($input['mark']) < 0 )
+            {
+                return response([
+                    'status' => 400,
+                    'message' => 'Invalid marks',
+                    'data' => [],
+                ], 400);
+            }
+            $input['term'] = $this->find_current_trm();
+            $stud_meta = Student::find($input['student']);
+            $isValidSubject = Enrollment::where('student', $input['student'])
+                ->where('subject', $input['subject'])
+                ->where('status', 'enrolled')
+                ->exists();
+            if(!$isValidSubject){
+                return response([
+                    'status' => 400,
+                    'message' => 'Invalid subject, learner not enrolled',
+                    'data' => [],
+                ], 400);
+            }
+            $input['grade'] = $this->extract_g_scale($input['mark'], $stud_meta->form);
+            Performance::find($id)->update($input);
+            return response([
+                'status' => 200,
+                'message' => 'Success. Done',
+                'data' => $this->find_performance_data(),
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response([
+                'status' => 400,
+                'message' => "Server error. Invalid data",
+                'errors' => $e->getMessage(),
+            ], 400);
+        } catch (PDOException $e) {
+            return response([
+                'status' => 400,
+                'message' => "Db error. Invalid data",
+                'errors' => $e->getMessage(),
+            ], 400);
+        }
     }
     public function drop($id)
     {
@@ -524,33 +611,18 @@ class PerformanceController extends Controller
     }
     protected function extract_g_scale($mark, $form)
     {
-        $g = $this->g_scale($form);
-        $mark = number_format($mark, 0);
-        $g = array_combine($g[0], $g[1]);
-        foreach( $g as $k => $v )
-        {
-            $s = explode('-', $v);
-            if($mark >= $s[0] &&  $mark <= $s[1] )
-            {
-                return $k;
-            }
+        $scale = $this->g_scale($form, $mark);
+        if(!$scale){
+            return 'NA';
         }
-        return 'n/a';
+        return $scale->grade;
     }
-    protected function g_scale($form)
+    protected function g_scale($form, $score)
     {
-        $scales = Scale::where('form', $form)->orderBy('id', 'desc')->get();
-        if(is_null($scales))
-        {
-            return [];
-        }
-        $scales = $scales->toArray();
-        $m = $g = [];
-        foreach( $scales as $scale ):
-            array_push($m, $scale['mark']);
-            array_push($g, $scale['grade']);
-        endforeach;
-        return [array_reverse($g), array_reverse($m)];
+        return Scale::where('form', $form)
+            ->where('min_mark', '<=', $score)
+            ->where('max_mark', '>=', $score)
+            ->first();
     }
     protected function has_current_trm()
     {
@@ -611,30 +683,18 @@ class PerformanceController extends Controller
             $term_meta = Term::find($_data['term']);
             if(!is_null( $term_meta ))
             {
-                $_data['ylabel'] = $term_meta->year . ' ' . $term_meta->label;
+                $_data['term_year'] = $term_meta->year . ' ' . $term_meta->label;
             }
             $stud_meta = Student::find($_data['student']);
             if(!is_null( $stud_meta ))
             {
-                $_data['slabel'] = $stud_meta->fname . ' ' . $stud_meta->lname;
-                $_data['admlabel'] = $stud_meta->admission;
-                $_data['flabel'] = 'Form ' . $stud_meta->form;
-                $stream_meta = Formstream::find($stud_meta->stream);
-                if(!is_null($stream_meta))
-                {
-                    $_data['streamlabel'] = $stream_meta->form . $stream_meta->name;
-                }
+                $_data['student_data'] = $stud_meta;
+                $_data['level_data'] = Form::find($stud_meta->form);
+                $_data['stream_data'] = Formstream::find($stud_meta->stream);
             }
-            $subject_meta = Subject::find($_data['subject']);
-            if(!is_null($subject_meta))
-            {
-                $_data['sublabel'] = $subject_meta->name;
-            }
+            $_data['subject_data'] = Subject::find($_data['subject']);
             $assess_meta = Assessmentgroup::find($_data['group']);
-            if(!is_null($assess_meta))
-            {
-                $_data['alabel'] = $assess_meta->name;
-            }
+            $_data['assessment_group_data'] = $assess_meta;
             array_push($rtn, $_data);
         endforeach;
         return $rtn;

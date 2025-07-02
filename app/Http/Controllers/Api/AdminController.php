@@ -59,7 +59,7 @@ class AdminController extends Controller
                 return response([
                     'status' => 400,
                     'success' => false,
-                    'message' => 'A required field was not found',
+                    'message' => 'Error: Invalid field(s) detected',
                     'errors' => $validator->errors()->all(),
                 ], 400);
             }
@@ -131,7 +131,7 @@ class AdminController extends Controller
                 return response([
                     'status' => 400,
                     'success' => false,
-                    'message' => 'A required field was not found',
+                    'message' => 'Error: Invalid field(s) detected',
                     'errors' => $validator->errors()->all(),
                 ], 400);
             }

@@ -71,7 +71,7 @@ class StudentController extends Controller
             if( $validator->fails() ){
                 return response([
                     'status' => 400,
-                    'message' => 'A required field was not found',
+                    'message' => 'Error: Invalid field(s) detected',
                     'errors' => $validator->errors()->all(),
                 ], 400);
             }
@@ -172,7 +172,7 @@ class StudentController extends Controller
             if( $validator->fails() ){
                 return response([
                     'status' => 400,
-                    'message' => 'A required field was not found',
+                    'message' => 'Error: Invalid field(s) detected',
                     'errors' => $validator->errors()->all(),
                 ], 400);
             }
