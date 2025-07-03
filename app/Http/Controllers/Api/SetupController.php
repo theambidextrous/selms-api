@@ -76,7 +76,9 @@ class SetupController extends Controller
             $s->phone = $input['phone'];
             $s->website = $input['website'];
             $s->motto = $input['motto'];
-            $s->logo = $input['logo'];
+            if(isset($input['logo'])){
+                $s->logo = $input['logo'];
+            }
             $s->save();
             return response([
                 'status' => 200,
@@ -136,7 +138,7 @@ class SetupController extends Controller
     }
     protected function format_setup_data($data)
     {
-        $data['logo'] = route('stream', ['file' => $data['logo']]);
+        //$data['logo'] = route('stream', ['file' => $data['logo']]);
         return $data;
     }
     protected function format_phone($phone)

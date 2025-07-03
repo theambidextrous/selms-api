@@ -18,6 +18,9 @@ class Timetable extends Model
         'subject',
         'teacher',
         'datetime',
+        'color',
+        'lesson_name',
+        'duration'
     ];
 
 }

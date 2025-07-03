@@ -46,6 +46,9 @@ class TimeTableController extends Controller
                 'stream' => 'required|string|not_in:nn',
                 'teacher' => 'required|string|not_in:nn',
                 'subject' => 'required|string|not_in:nn',
+                'color' => 'required|string',
+                //'lesson_name' => '',
+                'duration' => 'required|integer'
             ]);
             if( $validator->fails() ){
                 return response([
@@ -66,6 +69,7 @@ class TimeTableController extends Controller
             $input['current_term'] = $this->find_current_trm();
             $this->validate_stream_subject($input);
             $this->validate_stream_class_clash($input);
+            $this->validate_teacher_class_clash($input);
             if( strtoupper($input['day']) != strtoupper(date('l', strtotime($input['date']))) )
             {
                 return response([
@@ -75,6 +79,7 @@ class TimeTableController extends Controller
                 ], 400);
             }
             $input['datetime'] = $this->generate_datetime($input);
+            $input['lesson_name'] = Subject::find($input['subject'])->name;
             Timetable::create($input);
             return response([
                 'status' => 200,
@@ -113,12 +118,16 @@ class TimeTableController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
+               // 'current_term' => 'required|string',
                 'day' => 'required|string|not_in:nn',
                 'date' => 'required|string',
                 'time' => 'required|string',
                 'stream' => 'required|string|not_in:nn',
                 'teacher' => 'required|string|not_in:nn',
                 'subject' => 'required|string|not_in:nn',
+                'color' => 'required|string',
+                //'lesson_name' => '',
+                'duration' => 'required|integer'
             ]);
             if( $validator->fails() ){
                 return response([
@@ -138,7 +147,8 @@ class TimeTableController extends Controller
             }
             $input['current_term'] = $this->find_current_trm();
             $this->validate_stream_subject($input);
-            $this->validate_stream_class_clash($input);
+            $this->validate_stream_class_clash($input, $id);
+            $this->validate_teacher_class_clash($input, $id);
             if( strtoupper($input['day']) != strtoupper(date('l', strtotime($input['date']))) )
             {
                 return response([
@@ -308,7 +318,7 @@ class TimeTableController extends Controller
     }
     protected function find_ttable_data()
     {
-        $d = Timetable::where('id', '!=', 0)->orderBy('date', 'desc')->get();
+        $d = Timetable::where('id', '!=', 0)->orderBy('date')->get();
         if(is_null($d))
         {
             return [];
@@ -319,26 +329,34 @@ class TimeTableController extends Controller
     {
         $rtn = [];
         foreach( $data as $_data ):
+            $_data['title'] = $_data['lesson_name'];
+            $_data['lesson_duration'] = intval($_data['duration']);
+            $_data['lesson_date'] = $_data['date'];
+            $_data['start'] = $_data['date'] . 'T' . $_data['time'] . ':00';
+            $_data['end'] = $_data['date'] . 'T' . $this->addMinutesToTime($_data['time'], intval($_data['duration'])) . ':00';
+            $props = new \stdClass();
+            $props->calendar = $_data['color'];
+            $_data['extendedProps'] = $props;
             $t_meta = User::find($_data['teacher']);
             if(!is_null( $t_meta ))
             {
-                $_data['tlabel'] = $t_meta->fname . ' ' . $t_meta->lname;
-            }
-            $sub_meta = Subject::find($_data['subject']);
-            if(!is_null( $sub_meta ))
-            {
-                $_data['sublabel'] = $sub_meta->name;
+                $_data['teacher_meta'] = $t_meta;
             }
             $s_meta = Formstream::find($_data['stream']);
             if(!is_null( $s_meta ))
             {
-                $_data['slabel'] = $s_meta->form.$s_meta->name;
+                $_data['stream_name'] = $s_meta->name;
             }
             array_push($rtn, $_data);
         endforeach;
         return $rtn;
     }
-    protected function validate_stream_subject($data)
+    protected function addMinutesToTime($time, $minutes){
+        $dateTime = new \DateTime($time);
+        $dateTime->add(new \DateInterval('PT'.$minutes.'M'));
+        return $dateTime->format('H:i');
+    }
+    protected function validate_stream_subject($data, $id = null)
     {
         $subject = Subject::find($data['subject']);
         $sub_form = intval($subject->form);
@@ -348,21 +366,55 @@ class TimeTableController extends Controller
 
         if($str_form != $sub_form)
         {
-            throw new \Exception('The subject you selected does not belong to Form ' . $str_form.$stream->name);
+            throw new \Exception('The subject you selected does not belong to ' . $stream->name . ' class');
         }
         return;
     }
-    protected function validate_stream_class_clash($data)
+    protected function validate_stream_class_clash($data, $id = null)
     {
-        $count = Timetable::where('day', $data['day'])
-            ->where('time', $data['time'])
-            ->where('stream', $data['stream'])->count();
-        if( $count )
-        {
-            $stream = Formstream::find($data['stream']);
-            throw new \Exception('Lessons Clash. Form ' . $stream->form.$stream->name . ' has another class at this time on ' . $data['day'] . 's.');
+        if($id){
+            $existsAlready = Timetable::where('day', $data['day'])
+                ->where('time', $data['time'])
+                ->whereNotIn('id', [$id])
+                ->where('stream', $data['stream'])->exists();
+            if( $existsAlready )
+            {
+                $stream = Formstream::find($data['stream']);
+                throw new \Exception('Lessons Clash. ' . $stream->name . ' has another session at this time on ' . $data['day'] . 's.');
+            }
+        } else {
+            $existsAlready = Timetable::where('day', $data['day'])
+                ->where('time', $data['time'])
+                ->where('stream', $data['stream'])->exists();
+            if( $existsAlready )
+            {
+                $stream = Formstream::find($data['stream']);
+                throw new \Exception('Lessons Clash. ' . $stream->name . ' has another session at this time on ' . $data['day'] . 's.');
+            }
         }
-        return;
+    }
+    protected function validate_teacher_class_clash($data, $id = null)
+    {
+        if($id){
+            $existsAlready = Timetable::where('day', $data['day'])
+                ->where('time', $data['time'])
+                ->whereNotIn('id', [$id])
+                ->where('teacher', $data['teacher'])->exists();
+            if( $existsAlready )
+            {
+                $user = User::find($data['teacher']);
+                throw new \Exception('Lessons Clash. ' . $user->fname . ' has another session at this time on ' . $data['day'] . 's.');
+            }
+        } else {
+            $existsAlready = Timetable::where('day', $data['day'])
+                ->where('time', $data['time'])
+                ->where('teacher', $data['teacher'])->exists();
+            if( $existsAlready )
+            {
+                $user = User::find($data['teacher']);
+                throw new \Exception('Lessons Clash. ' . $user->fname . ' has another session at this time on ' . $data['day'] . 's.');
+            }
+        }
     }
     protected function generate_datetime($data)
     {
