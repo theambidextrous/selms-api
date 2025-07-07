@@ -290,6 +290,12 @@ class AdminController extends Controller
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
             ], 400);
+        } catch (\Exception $e) {
+            return response([
+                'status' => 400,
+                'message' => "SOme other errors",
+                'errors' => $e->getMessage(),
+            ], 403);
         }
     }
  /**
