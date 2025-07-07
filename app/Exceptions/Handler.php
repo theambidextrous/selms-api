@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -31,19 +30,6 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
-        });
-
-        $this->renderable(function (BadRequestHttpException $e, $request) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => $e->getMessage() ?: 'Invalid request data',
-                    'errors' => [] 
-                ], 400);
-            }
-            
-            return back()->withInput()->withErrors([
-                'message' => $e->getMessage() ?: 'Invalid request data'
-            ]);
         });
     }
 

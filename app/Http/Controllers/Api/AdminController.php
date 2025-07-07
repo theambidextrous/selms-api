@@ -240,43 +240,57 @@ class AdminController extends Controller
  */
     public function signin(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string'
-        ]);
-        if( $validator->fails() ){
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required|string'
+            ]);
+            if( $validator->fails() ){
+                return response([
+                    'status' => 400,
+                    'success' => false,
+                    'message' => "Invalid Email or password",
+                    'errors' => $validator->errors()->all(),
+                ], 400);
+            }
+            $login = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string'
+            ]);
+            if( !Auth::attempt( $login ) )
+            {
+                return response([
+                    'status' => 400,
+                    'message' => "Invalid username or password. Try again",
+                    'errors' => [],
+                ], 400);
+            }
+            $accessToken = Auth::user()->createToken('authToken')->accessToken;
+            $user = Auth::user();
+            $user['token'] = $accessToken;
+            $user['has_setup'] = 1;
+            if( Auth::user()->is_super )
+            {
+                $user['has_setup'] = Setup::count();
+            }
+            return response([
+                'status' => 200,
+                'message' => 'Success. logged in',
+                'data' => $user,
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
             return response([
                 'status' => 400,
-                'success' => false,
-                'message' => "Invalid Email or password",
-                'errors' => $validator->errors()->all(),
+                'message' => "Server error. Invalid data",
+                'errors' => $e->getMessage(),
             ], 400);
-        }
-        $login = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string'
-        ]);
-        if( !Auth::attempt( $login ) )
-        {
+        } catch (PDOException $e) {
             return response([
                 'status' => 400,
-                'message' => "Invalid username or password. Try again",
-                'errors' => [],
+                'message' => "Db error. Invalid data",
+                'errors' => $e->getMessage(),
             ], 400);
         }
-        $accessToken = Auth::user()->createToken('authToken')->accessToken;
-        $user = Auth::user();
-        $user['token'] = $accessToken;
-        $user['has_setup'] = 1;
-        if( Auth::user()->is_super )
-        {
-            $user['has_setup'] = Setup::count();
-        }
-        return response([
-            'status' => 200,
-            'message' => 'Success. logged in',
-            'data' => $user,
-        ], 200);
     }
  /**
  * @OA\Post(
