@@ -293,9 +293,9 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return response([
                 'status' => 400,
-                'message' => "SOme other errors",
+                'message' => "Some other errors",
                 'errors' => $e->getMessage(),
-            ], 403);
+            ], 400);
         }
     }
  /**

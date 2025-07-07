@@ -15,6 +15,8 @@ class TrustHosts extends Middleware
     {
         return [
             $this->allSubdomainsOfApplicationUrl(),
+            'ec2-3-249-35-195.eu-west-1.compute.amazonaws.com',
+            'localhost',
         ];
     }
 }
