@@ -32,6 +32,19 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (BadRequestHttpException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage() ?: 'Invalid request data',
+                    'errors' => [] 
+                ], 400);
+            }
+            
+            return back()->withInput()->withErrors([
+                'message' => $e->getMessage() ?: 'Invalid request data'
+            ]);
+        });
     }
 
     /**
@@ -62,10 +75,6 @@ class Handler extends ExceptionHandler
         ];
 
         if ($exception instanceof ValidationException) {
-            $response['errors'] = $exception->errors();
-        }
-
-        if ($exception instanceof BadRequestHttpException) {
             $response['errors'] = $exception->errors();
         }
 
