@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -61,6 +62,10 @@ class Handler extends ExceptionHandler
         ];
 
         if ($exception instanceof ValidationException) {
+            $response['errors'] = $exception->errors();
+        }
+
+        if ($exception instanceof BadRequestHttpException) {
             $response['errors'] = $exception->errors();
         }
 
