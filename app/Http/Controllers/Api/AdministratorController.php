@@ -43,6 +43,7 @@ class AdministratorController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
+                'user_type' => 'required|string',
                 'fname' => 'required|string',
                 'lname' => 'required|string',
                 'address' => 'required|string',
@@ -63,11 +64,11 @@ class AdministratorController extends Controller
             }
             $input = $request->all();
             $input['is_super'] = false;
-            $input['is_admin'] = true;
-            $input['is_lib'] = false;
-            $input['is_fin'] = false;
+            $input['is_admin'] = intval($input['user_type']) == 1;
+            $input['is_lib'] = intval($input['user_type']) == 2;
+            $input['is_fin'] = intval($input['user_type']) == 3;
             $input['is_teacher'] = false;
-            $input['is_parent'] = false;
+            $input['is_parent'] = intval($input['user_type']) == 4;
             if( User::where('email', $input['email'])->count() )
             {
                 return response([
@@ -127,6 +128,7 @@ class AdministratorController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
+                'user_type' => 'required|string',
                 'fname' => 'required|string',
                 'lname' => 'required|string',
                 'address' => 'required|string',
@@ -144,12 +146,13 @@ class AdministratorController extends Controller
                 ], 400);
             }
             $input = $request->all();
+            
             $input['is_super'] = false;
-            $input['is_admin'] = true;
-            $input['is_lib'] = false;
-            $input['is_fin'] = false;
+            $input['is_admin'] = intval($input['user_type']) == 1;
+            $input['is_lib'] = intval($input['user_type']) == 2;
+            $input['is_fin'] = intval($input['user_type']) == 3;
             $input['is_teacher'] = false;
-            $input['is_parent'] = false;
+            $input['is_parent'] = intval($input['user_type']) == 4;
             $input['phone'] = $this->format_phone($input['phone']);
             if(!strlen($input['password']))
             {
@@ -249,13 +252,26 @@ class AdministratorController extends Controller
     }
     protected function find_admins_data()
     {
-        $d = User::where('is_admin', true)->where('is_active', true)
-        ->orderBy('id', 'desc')->get();
+        $d = User::where('is_super', false)
+            ->where('is_teacher', false)
+            ->where('is_active', true)
+            ->orderBy('id', 'desc')->get();
 
         if(is_null($d))
         {
             return [];
         }
-        return $d->toArray();
+        return array_map(function($_data){
+            $_data['user_type'] = $this->toUserTypeId($_data);
+            return $_data;
+        }, $d->toArray());
+    }
+
+    protected function toUserTypeId($input){
+        if($input['is_admin']) return 1;
+        if($input['is_lib']) return 2;
+        if($input['is_fin']) return 3;
+        if($input['is_parent']) return 4;
+        return 0;
     }
 }

@@ -16,6 +16,9 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Pcode;
 use App\Models\Setup;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Models\Timetable;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -138,7 +141,7 @@ class AttendanceController extends Controller
         return response([
             'status' => 200,
             'message' => "Done successfully",
-            'data' => $data->toArray(),
+            'data' => $this->formatData($data->toArray()),
         ], 200);
     }
     public function find($id)
@@ -157,5 +160,17 @@ class AttendanceController extends Controller
             'message' => "Done successfully",
             'data' => $data,
         ], 200);
+    }
+
+    protected function formatData($data){
+        return array_map(function ($_entry){
+            $lesson = Timetable::find($_entry['lesson']);
+            $student = Student::find($_entry['student']);
+            $subject = Subject::find($lesson->subject);
+            $_entry['lesson_data'] = $lesson;
+            $_entry['student_data'] = $student;
+            $_entry['subject_data'] = $subject;
+            return $_entry;
+        }, $data);
     }
 }
