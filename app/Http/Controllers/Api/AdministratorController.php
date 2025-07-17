@@ -205,6 +205,24 @@ class AdministratorController extends Controller
 
     /**
      * @OA\Get(
+     *     path="/pci/api/v1/administrators/all",
+     *     tags={"Administrators"},
+     *     summary="Fetch list of all users",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
+
+    public function allUsers()
+    {
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $this->find_all_user_data(),
+        ], 200);
+    }
+
+     /**
+     * @OA\Get(
      *     path="/pci/api/v1/administrators/findall",
      *     tags={"Administrators"},
      *     summary="Fetch list of school administrators",
@@ -254,6 +272,22 @@ class AdministratorController extends Controller
     {
         $d = User::where('is_super', false)
             ->where('is_teacher', false)
+            ->where('is_active', true)
+            ->orderBy('id', 'desc')->get();
+
+        if(is_null($d))
+        {
+            return [];
+        }
+        return array_map(function($_data){
+            $_data['user_type'] = $this->toUserTypeId($_data);
+            return $_data;
+        }, $d->toArray());
+    }
+
+      protected function find_all_user_data()
+    {
+        $d = User::where('is_super', false)
             ->where('is_active', true)
             ->orderBy('id', 'desc')->get();
 

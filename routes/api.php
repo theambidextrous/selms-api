@@ -65,6 +65,7 @@ Route::prefix('/administrators')->group( function() {
         Route::post('/drop/{id}', [AdministratorController::class, 'drop']);
         Route::get('/find/{id}', [AdministratorController::class, 'find']);
         Route::get('/findall', [AdministratorController::class, 'findall']);
+        Route::get('/all', [AdministratorController::class, 'allUsers']);
     });
 });
 /** Librarians */

@@ -15,6 +15,7 @@ use Carbon\Carbon;
 
 use App\Models\Expense;
 use App\Models\Term;
+use App\Models\User;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -198,6 +199,10 @@ class ExpenseController extends Controller
             if(!is_null( $term_meta ))
             {
                 $_data['ylabel'] = $term_meta->year . ' ' . $term_meta->label;
+            }
+            $user = User::find($_data['person']);
+            if(!is_null($user)){
+                $_data['plabel'] = $user->fname . ' ' . $user->lname;
             }
             array_push($rtn, $_data);
         endforeach;

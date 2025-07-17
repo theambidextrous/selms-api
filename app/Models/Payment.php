@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Repayment extends Model
+class Payment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'loan',
-        'paid',
-        'paid_by',
+        'student',
+        'amount',
+        'remarks',
         'received_by',
-        'pay_date',
     ];
 }

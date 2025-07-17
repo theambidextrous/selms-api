@@ -14,6 +14,7 @@ class Fee extends Model
         'narration',
         'student',
         'fee',
+        'paid_amount',
         'subject',
         'type',
         'cleared'

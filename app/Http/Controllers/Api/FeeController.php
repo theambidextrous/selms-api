@@ -38,6 +38,7 @@ class FeeController extends Controller
                 'narration' => 'required|string',
                 'student' => 'required|string',
                 'fee' => 'required|string',
+                'type' => 'required|string',
             ]);
             if( $validator->fails() ){
                 return response([
@@ -55,13 +56,20 @@ class FeeController extends Controller
                     'data' => [],
                 ], 400);
             }
-            $input['fee'] = intval(abs($input['fee'])) * -1;
+            $input['fee'] = intval(abs($input['fee']));
             $stud_metadata = Student::where('admission', $input['student'])->first();
             if(is_null($stud_metadata))
             {
                 return response([
                     'status' => 400,
                     'message' => 'No student was found with the following admission number',
+                    'errors' => [],
+                ], 400); 
+            }
+            if($input['type'] == 'Tution' && !strlen($input['subject'])){
+                return response([
+                    'status' => 400,
+                    'message' => 'Must provide subject if fee type is "Tution"',
                     'errors' => [],
                 ], 400); 
             }
@@ -100,7 +108,9 @@ class FeeController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'narration' => 'required|string',
+                'student' => 'required|string',
                 'fee' => 'required|string',
+                'type' => 'required|string',
             ]);
             if( $validator->fails() ){
                 return response([
@@ -118,7 +128,14 @@ class FeeController extends Controller
                     'data' => [],
                 ], 400);
             }
-            $input['fee'] = intval(abs($input['fee'])) * -1;
+            if($input['type'] == 'Tution' && !strlen($input['subject'])){
+                return response([
+                    'status' => 400,
+                    'message' => 'Must provide subject if fee type is "Tution"',
+                    'errors' => [],
+                ], 400); 
+            }
+            $input['fee'] = intval(abs($input['fee']));
             $input['term'] = $this->find_current_trm();
             Fee::find($id)->update($input);
             return response([
@@ -195,7 +212,7 @@ class FeeController extends Controller
     }
     protected function find_fees_data()
     {
-        $d = Fee::where('fee', '<', 0)->orderBy('id', 'desc')->get();
+        $d = Fee::where('cleared', 0)->orderBy('id', 'desc')->get();
         if(is_null($d))
         {
             return [];
@@ -216,6 +233,7 @@ class FeeController extends Controller
             {
                 $_data['slabel'] = $stud_meta->fname . ' ' . $stud_meta->lname;
                 $_data['admlabel'] = $stud_meta->admission;
+                $_data['student'] = $stud_meta->admission;
             }
             $_data['posted'] = date('m/d/Y', strtotime($_data['created_at']));
             array_push($rtn, $_data);
