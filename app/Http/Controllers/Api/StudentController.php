@@ -21,6 +21,7 @@ use App\Models\Fee;
 use App\Models\User;
 use App\Models\Form;
 use App\Models\Formstream;
+use App\Http\Requests\PageableRequest;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -254,12 +255,23 @@ class StudentController extends Controller
      *     @OA\Response(response=200, description="Success")
      * )
      */
-    public function findall()
-    {
+    public function findall(PageableRequest $request) {
+        $collection = Student::query()
+            ->where('is_active', true) 
+            ->orderBy('created_at', 'desc');
+
+        $pageable = $request->defaults();
+        $data = $collection->paginate( $pageable['size'], ['*'], 'page', $pageable['page']);
         return response([
             'status' => 200,
             'message' => "Done successfully",
-            'data' => $this->find_stud_data(),
+            'data' => $this->format_stud_data($data->items()),
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $data->total(),
+                'last_page' => $data->lastPage(),
+            ]
         ], 200);
     }
 
