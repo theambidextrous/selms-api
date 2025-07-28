@@ -10,7 +10,7 @@ class PageableRequest extends FormRequest
     {
         return [
             'page' => 'integer|min:1',
-            'size' => 'integer|min:1|max:100',
+            'size' => 'integer|min:1|max:1000',
         ];
     }
 
