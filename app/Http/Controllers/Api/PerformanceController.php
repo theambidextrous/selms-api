@@ -423,6 +423,7 @@ class PerformanceController extends Controller
     protected function find_std_fee_balances($input)
     {
         $fee = Fee::where('student', $input['student'])
+            ->where('cleared', 0)
             ->where('term', $input['term'])->sum('fee');
         if($fee > 0 )
         {

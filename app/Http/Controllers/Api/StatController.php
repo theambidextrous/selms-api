@@ -15,85 +15,189 @@ use Carbon\Carbon;
 use PDF;
 
 
-use App\Models\Setup;
+use App\Models\Form;
 use App\Models\Term;
 use App\Models\Student;
-use App\Models\Teacher;
+use App\Models\User;
+use App\Models\AppMessage;
+use App\Models\Formstream;
+use App\Models\Subject;
+use App\Models\Payment;
+use App\Models\Attendance;
+use App\Models\Enrollment;
+use App\Http\Requests\StatsRequest;
 
 class StatController extends Controller
 {
-    public function dashboard()
+    public function dashboard(StatsRequest $request)
     {
-       $this->aut_update_current_trm();
-
+        $xMonthsAgo = Carbon::now()->subMonths($request->monthsAgo);
+        $doubleXMonthsAgo = Carbon::now()->subMonths($request->monthsAgo * 2);
+        $this->aut_update_current_trm();
+    
         $stat = [
-            'cont' => 'KES. ' . $this->find_feespay_avr(),
-            'me' => $this->find_learners_count(),
-            'def' => $this->find_teachers_count(),
-            'loan' => $this->find_bal_avr(),
-            'toptentrucks' => [],
-            'top_five_exp' => [],
-            'top_five_loads' => [],
-            'top_five_mileage' => [],
+            'payment' => $this->paymentStats($xMonthsAgo),
+            'appMessages' => $this->appMessages($xMonthsAgo),
+            'teachers' => $this->teachersStats($xMonthsAgo, $doubleXMonthsAgo),
+            'students' => $this->studentsStats($xMonthsAgo, $doubleXMonthsAgo),
+            'parents' => $this->parentsStats($xMonthsAgo, $doubleXMonthsAgo),
+            'levels' => Form::all()->count(),
+            'levelStreams' => Formstream::all()->count(),
+            'programs' => Subject::all()->count(),
+            'attendance' => $this->attendanceStat($xMonthsAgo),
+            'enrollment' => $this->enrollmentStats($xMonthsAgo, $doubleXMonthsAgo)
         ];
+        
         return response([
             'status' => 200,
             'data' => $stat,
         ], 200);
     }
-    protected function find_bal_avr()
-    {
-        return 3.5;
-    }
-    protected function find_six_m_ago()
-    {
-        return [
-            date('Y-m-d'),
-            date("Y-m-d", strtotime("-1 months")),
-            date("Y-m-d", strtotime("-2 months")),
-            date("Y-m-d", strtotime("-3 months")),
-            date("Y-m-d", strtotime("-4 months")),
-            date("Y-m-d", strtotime("-5 months")),
-        ];
-    }
-    protected function find_feespay_avr()
-    {
-        return 75;
-    }
-    protected function find_teachers_count()
-    {
-        return 0;
-    }
-    protected function find_learners_count()
-    {
-        return Student::where('id', '!=', 0)->count();
-    }
-    protected function count_months($fdate, $sdate)
-    {
-        $ts1 = strtotime($fdate);
-        $ts2 = strtotime($sdate);
 
-        $year1 = date('Y', $ts1);
-        $year2 = date('Y', $ts2);
+    protected function enrollmentStats($xMonthsAgo, $doubleXMonthsAgo){
+        $total = Enrollment::where('status', 'enrolled')
+            ->count();
+        $period = Enrollment::where('created_at', '>=', $xMonthsAgo)
+            ->where('status', 'enrolled')
+            ->count();
+        $doublePeriod = Enrollment::where('created_at', '>=', $doubleXMonthsAgo)
+            ->where('status', 'enrolled')
+            ->count();
+        $stat = new \stdClass();
+        $stat->previous = $doublePeriod - $period;
+        $stat->current = $period;
+        $stat->difference = $stat->previous - $stat->current;
+        $stat->ratio = $this->findRatio($stat->previous, $stat->current);
+        $stat->total = $total;
+        return $stat;
+    }
+
+    protected function studentsStats($xMonthsAgo, $doubleXMonthsAgo){
+        $period = Student::where('created_at', '>=', $xMonthsAgo)
+            ->where('is_active', 1)
+            ->count();
+        $doublePeriod = Student::where('created_at', '>=', $doubleXMonthsAgo)
+            ->where('is_active', 1)
+            ->count();
+        $stat = new \stdClass();
+        $stat->previous = $doublePeriod - $period;
+        $stat->current = $period;
+        $stat->difference = $stat->previous - $stat->current;
+        $stat->ratio = $this->findRatio($stat->previous, $stat->current);
+        return $stat;
+    }
+
+    protected function teachersStats($xMonthsAgo, $doubleXMonthsAgo){
+        $period = User::where('created_at', '>=', $xMonthsAgo)
+            ->where('is_active', 1)
+            ->where('is_teacher', 1)
+            ->count();
+        $doublePeriod = User::where('created_at', '>=', $doubleXMonthsAgo)
+            ->where('is_active', 1)
+            ->where('is_teacher', 1)
+            ->count();
+        $stat = new \stdClass();
+        $stat->previous = $doublePeriod - $period;
+        $stat->current = $period;
+        $stat->difference = $stat->previous - $stat->current;
+        $stat->ratio = $this->findRatio($stat->previous, $stat->current);
+        return $stat;
+    }
+
+     protected function parentsStats($xMonthsAgo, $doubleXMonthsAgo){
+        $period = User::where('created_at', '>=', $xMonthsAgo)
+            ->where('is_active', 1)
+            ->where('is_parent', 1)
+            ->count();
+        $doublePeriod = User::where('created_at', '>=', $doubleXMonthsAgo)
+            ->where('is_active', 1)
+            ->where('is_parent', 1)
+            ->count();
+        $stat = new \stdClass();
+        $stat->previous = $doublePeriod - $period;
+        $stat->current = $period;
+        $stat->difference = $stat->previous - $stat->current;
+        $stat->ratio = $this->findRatio($stat->previous, $stat->current);
+        return $stat;
+    }
+
+    protected function findRatio($previous, $current){
+        $dif = $previous - $current;
+        if($dif == 0 ){
+            return 0.0;
+        }
+        if($dif < 0){
+            return (($current - $previous)/($previous + $current)) * 100;
+        }
+
+        return -(($previous - $current)/($previous + $current)) * 100;
         
-        $month1 = intval(date('m', $ts1));
-        $month2 = intval(date('m', $ts2));
+    }
 
-        $diff = (($year2 - $year1) * 12) + ($month2 - $month1);
-        if( $diff == 0 )
-        {
-            return 1;
-        }
-        return $diff;
-    }
-    protected function format_ks($k)
+    protected function attendanceStat($xMonthsAgo)
     {
-        if(intval($k) > 1000 )
-        {
-            return number_format($k/1000, 2) . 'k';
-        }
-        return number_format($k, 2);
+        $attendanceStats = Attendance::where('created_at', '>=', $xMonthsAgo)
+            ->selectRaw('
+                YEAR(created_at) as year,
+                MONTH(created_at) as month,
+                SUM(CASE WHEN is_in = 1 THEN 1 ELSE 0 END) as present,
+                SUM(CASE WHEN is_in = 0 THEN 1 ELSE 0 END) as absent'
+            )
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+        return $attendanceStats;
     }
+
+    protected function paymentStats($xMonthsAgo)
+    {
+        $totalAmount = Payment::where('created_at', '>=', $xMonthsAgo)->sum('amount');
+        $monthlyTotals = Payment::where('created_at', '>=', $xMonthsAgo)
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(amount) as total')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+        $stat = new \stdClass();
+        $stat->count = $totalAmount;
+        $stat->trend = $monthlyTotals;
+        return $stat;
+    }
+   
+    protected function appMessages($xMonthsAgo)
+    {
+        $sendCount = AppMessage::where('created_at', '>=', $xMonthsAgo)
+            ->where('send', true)
+            ->count();
+        $sendTrend = AppMessage::where('created_at', '>=', $xMonthsAgo)
+            ->where('send', true)
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+        $pendingApprovalCount = AppMessage::where('created_at', '>=', $xMonthsAgo)
+            ->where('send', false)
+            ->where('approved', false)
+            ->count();
+        $pendingApprovalTrend = AppMessage::where('created_at', '>=', $xMonthsAgo)
+            ->where('send', false)
+            ->where('approved', false)
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+        
+        $stat = new \stdClass();
+        $stat->sendCount = $sendCount;
+        $stat->sendTrend = $sendTrend;
+        $stat->pendingApprovalCount = $pendingApprovalCount;
+        $stat->pendingApprovalTrend = $pendingApprovalTrend;
+        return $stat;
+    }
+ 
     protected function has_any_terms()
     {
         if(Term::where('id', '!=', 0)->count())
@@ -102,6 +206,7 @@ class StatController extends Controller
         }
         return false;
     }
+
     protected function aut_update_current_trm()
     {
         $now = date('Y-m-d');

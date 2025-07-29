@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StatController;
 use App\Http\Controllers\Api\LibrarianController;
 use App\Http\Controllers\Api\AdministratorController;
+use App\Http\Controllers\Api\AppMessagingController;
 use App\Http\Controllers\Api\FinanceController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\StudentController;
@@ -68,6 +69,15 @@ Route::prefix('/administrators')->group( function() {
         Route::get('/all', [AdministratorController::class, 'allUsers']);
     });
 });
+
+/** App Messages */
+Route::prefix('/messages')->group( function() {
+    Route::middleware('auth:api')->group( function(){
+        Route::post('/approve', [AppMessagingController::class, 'approveAndSend']);
+        Route::get('/findall', [AppMessagingController::class, 'findall']);
+    });
+});
+
 /** Librarians */
 Route::prefix('/librarians')->group( function() {
     Route::middleware('auth:api')->group( function(){
@@ -351,7 +361,6 @@ Route::middleware(['auth:api'])->group( function(){
 /** statistics */
 Route::middleware(['auth:api'])->group( function(){
     Route::prefix('/statistics')->group( function() {
-        /** weekly */
         Route::get('/dashboard', [StatController::class, 'dashboard']);
     });
 });
@@ -361,8 +370,8 @@ Route::fallback(function () {
     return response()->json(['status' => 404,'softbct_error' => 'Not Found!'], 404);
 });
 Route::get('/', function (Request $request) {
-    return response(['status' => 499, 'message' => 'point of no return']);
+    return response(['status' => 499, 'message' => 'point of no return'], 403);
 });
 Route::fallback(function () {
-    return response(['status'=> 499, 'message' => 'oops! Congrats! you\'ve reached point of no return']);
+    return response(['status'=> 499, 'message' => 'oops! Congrats! you\'ve reached point of no return'], 403);
 });
