@@ -90,7 +90,7 @@ class PerfByFormController extends Controller
         return response([
             'status' => 200,
             'message' => 'records found.',
-            'data' => $this->format_performance_data($data),
+            'data' => $this->new_format_performance_data($data),
         ], 200);
         
     }
@@ -656,6 +656,30 @@ class PerfByFormController extends Controller
             {
                 $_data['alabel'] = $assess_meta->name;
             }
+            array_push($rtn, $_data);
+        endforeach;
+        return $rtn;
+    }
+
+    protected function new_format_performance_data($data)
+    {
+        $rtn = [];
+        foreach( $data as $_data ):
+            $term_meta = Term::find($_data['term']);
+            if(!is_null( $term_meta ))
+            {
+                $_data['term_year'] = $term_meta->year . ' ' . $term_meta->label;
+            }
+            $stud_meta = Student::find($_data['student']);
+            if(!is_null( $stud_meta ))
+            {
+                $_data['student_data'] = $stud_meta;
+                $_data['level_data'] = Form::find($stud_meta->form);
+                $_data['stream_data'] = Formstream::find($stud_meta->stream);
+            }
+            $_data['subject_data'] = Subject::find($_data['subject']);
+            $assess_meta = Assessmentgroup::find($_data['group']);
+            $_data['assessment_group_data'] = $assess_meta;
             array_push($rtn, $_data);
         endforeach;
         return $rtn;

@@ -340,7 +340,7 @@ class PerformanceController extends Controller
             'headers' => $headers,
             'marks' => $the_marks[0],
             'avr' => $the_marks[1],
-            'scale' => $this->g_scale($student_m->form),
+            'scale' => $this->formLevelScale($student_m->form),
             'fees' => $this->find_std_fee_balances($input),
             'chart' => $this->make_chart($chart_data),
         ];
@@ -625,6 +625,14 @@ class PerformanceController extends Controller
             ->where('max_mark', '>=', $score)
             ->first();
     }
+
+    protected function formLevelScale($form)
+    {
+        return Scale::where('form', $form)
+            ->orderBy("id")
+            ->get();
+    }
+
     protected function has_current_trm()
     {
         $d = Term::where('is_current', true)->first();
@@ -659,10 +667,12 @@ class PerformanceController extends Controller
     }
     protected function find_setup()
     {
-        $s = Setup::where('id', '!=', 0)->first();
-        if(!is_null($s))
+        $setup = Setup::where('id', '!=', 0)->first();
+        if(!is_null($setup))
         {
-            return $s->toArray();
+            $logoParts = explode("/", $setup->logo);
+            $setup->logo = $logoParts[count($logoParts) - 1];
+            return $setup->toArray();
         }
         return [
             'school' => null,
@@ -705,9 +715,11 @@ class PerformanceController extends Controller
         $name_of_graph = (string)Str::uuid() . '.png';
         $filename = ('app/cls/trt/content/' . $name_of_graph);
         $data = [];
+        $testLabes = $input[0];
+        $testValues = $this->normalizeArrays($input[0], $input[1]);
         $loop = 0;
-        foreach($input[0] as $label):
-            array_push($data, [$label, $input[1][$loop]]);
+        foreach( $testLabes as $label):
+            array_push($data, [$label, $testValues[$loop]]);
             $loop++;
         endforeach;
         $plot = new PHPlot(200, 200);
@@ -731,5 +743,20 @@ class PerformanceController extends Controller
         $plot->SetOutputFile(storage_path($filename));
         $plot->DrawGraph();
         return $filename;
+    }
+
+    function normalizeArrays(array $array1, array $array2): array {
+        $length1 = count($array1);
+        $length2 = count($array2);
+        
+        if ($length2 < $length1) {
+            $array2 = array_pad($array2, $length1, 0);
+        }
+        
+        $array2 = array_map(function($value) {
+            return (int)$value;
+        }, $array2);
+        
+        return $array2;
     }
 }

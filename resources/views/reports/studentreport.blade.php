@@ -236,14 +236,14 @@
     <table class="table" id="customers" width="800px">
         <tr>
             <td>Grade</td>
-            @foreach( $scale[0] as $scl )
-                <td>{{ $scl }}</td>
+            @foreach( $scale as $scl )
+                <td>{{ $scl->grade }}</td>
             @endforeach
         </tr>
         <tr>
             <td>Score</td>
-            @foreach( $scale[1] as $gscl )
-                <td>{{ $gscl }}</td>
+            @foreach( $scale as $gscl )
+                <td>{{ $gscl->min_mark }} - {{ $gscl->max_mark }}</td>
             @endforeach
         </tr>
     </table>
