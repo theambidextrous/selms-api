@@ -612,9 +612,9 @@ class PerformanceController extends Controller
     }
     protected function extract_g_scale($mark, $form)
     {
-        $scale = $this->g_scale($form, $mark);
+        $scale = $this->g_scale($form, intval($mark));
         if(!$scale){
-            return 'NA';
+            return 'BE';
         }
         return $scale->grade;
     }

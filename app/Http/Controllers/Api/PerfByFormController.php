@@ -224,7 +224,7 @@ class PerfByFormController extends Controller
                 'headers' => $headers,
                 'marks' => $the_marks[0],
                 'avr' => $the_marks[1],
-                'scale' => $this->g_scale($as['form']),
+                'scale' => $this->formLevelScale($as['form']),
                 'fees' => $this->find_std_fee_balances($input),
                 'chart' => $this->make_chart($chart_data),
             ];
@@ -243,6 +243,22 @@ class PerfByFormController extends Controller
             'errors' => [],
         ], 200);
     }
+
+    protected function normalizeArrays(array $array1, array $array2): array {
+        $length1 = count($array1);
+        $length2 = count($array2);
+        
+        if ($length2 < $length1) {
+            $array2 = array_pad($array2, $length1, 0);
+        }
+        
+        $array2 = array_map(function($value) {
+            return (int)$value;
+        }, $array2);
+        
+        return $array2;
+    }
+
     protected function find_stud_lst_trm_perf($input, $thisterm)
     {
         $last_term_id = 0;
@@ -351,7 +367,8 @@ class PerfByFormController extends Controller
                     array_push($one_data, $entry);
                 }
                 $sb['data'] = $one_data;
-                $sb['mean'] = number_format( array_sum($summ)/count($scores), 2);
+                $countOfScores = count($scores) > 0 ? count($scores) : 1;
+                $sb['mean'] = number_format( array_sum($summ)/$countOfScores, 2);
                 $sb['meangrade'] = $this->extract_g_scale($sb['mean'], $st_form);
                 array_push($data, $sb);
             }
@@ -543,36 +560,31 @@ class PerfByFormController extends Controller
         }
         return implode(',', $rtn);
     }
+    
     protected function extract_g_scale($mark, $form)
     {
-        $g = $this->g_scale($form);
-        $mark = number_format($mark, 0);
-        $g = array_combine($g[0], $g[1]);
-        foreach( $g as $k => $v )
-        {
-            $s = explode('-', $v);
-            if($mark >= $s[0] &&  $mark <= $s[1] )
-            {
-                return $k;
-            }
+        $scale = $this->g_scale($form, intval($mark));
+        if(!$scale){
+            return 'BE';
         }
-        return 'n/a';
+        return $scale->grade;
     }
-    protected function g_scale($form)
+
+    protected function g_scale($form, $score)
     {
-        $scales = Scale::where('form', $form)->orderBy('id', 'desc')->get();
-        if(is_null($scales))
-        {
-            return [];
-        }
-        $scales = $scales->toArray();
-        $m = $g = [];
-        foreach( $scales as $scale ):
-            array_push($m, $scale['mark']);
-            array_push($g, $scale['grade']);
-        endforeach;
-        return [array_reverse($g), array_reverse($m)];
+        return Scale::where('form', $form)
+            ->where('min_mark', '<=', $score)
+            ->where('max_mark', '>=', $score)
+            ->first();
     }
+
+    protected function formLevelScale($form)
+    {
+        return Scale::where('form', $form)
+            ->orderBy("id")
+            ->get();
+    }
+
     protected function has_current_trm()
     {
         $d = Term::where('is_current', true)->first();
@@ -607,10 +619,12 @@ class PerfByFormController extends Controller
     }
     protected function find_setup()
     {
-        $s = Setup::where('id', '!=', 0)->first();
-        if(!is_null($s))
+        $setup = Setup::where('id', '!=', 0)->first();
+        if(!is_null($setup))
         {
-            return $s->toArray();
+            $logoParts = explode("/", $setup->logo);
+            $setup->logo = $logoParts[count($logoParts) - 1];
+            return $setup->toArray();
         }
         return [
             'school' => null,
@@ -689,9 +703,11 @@ class PerfByFormController extends Controller
         $name_of_graph = (string)Str::uuid() . '.png';
         $filename = ('app/cls/trt/content/' . $name_of_graph);
         $data = [];
+        $testLabes = $input[0];
+        $testValues = $this->normalizeArrays($input[0], $input[1]);
         $loop = 0;
-        foreach($input[0] as $label):
-            array_push($data, [$label, $input[1][$loop]]);
+        foreach( $testLabes as $label):
+            array_push($data, [$label, $testValues[$loop]]);
             $loop++;
         endforeach;
         $plot = new PHPlot(200, 200);
