@@ -29,11 +29,11 @@ class TimeTableController extends Controller
 {
     public function add(Request $request)
     {
-        if( !Auth::user()->is_super )
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
         {
             return response([
                 'status' => 400,
-                'message' => 'Permission Denied. Only super admins allowed.',
+                'message' => 'Permission Denied. Only super admins and teachers allowed.',
                 'errors' => [],
             ], 400);
         }
