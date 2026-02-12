@@ -498,7 +498,7 @@ class StudentController extends Controller
             $s_meta = Formstream::find($_data['stream']);
             if(!is_null( $s_meta ))
             {
-                $_data['slabel'] = $s_meta->form.$s_meta->name;
+                $_data['slabel'] = $s_meta->name;
             }
             if(!is_null($_data['pic']))
             {

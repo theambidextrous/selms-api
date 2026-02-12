@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use App\Models\Formstream;
 use App\Models\Form;
 use App\Models\User;
+use App\Models\TSubject;
+use App\Models\Subject;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -174,6 +176,36 @@ class FormStreamController extends Controller
             'data' => $this->find_formstreams_data(),
         ], 200);
     }
+
+     /**
+     * @OA\Get(
+     *     path="/pci/api/v1/forms-streams/findall/{teacher}",
+     *     tags={"Form streams"},
+     *     summary="Find all form streams",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
+    public function findallByTeacher($teacher)
+    {
+        $t_subjects = TSubject::where("teacher", $teacher)
+            ->select('subject')
+            ->get();
+        $t_forms = Subject::whereIn('id', $t_subjects)
+            ->select('form')
+            ->get();
+
+        $d = Formstream::whereIn('form', $t_forms)->get();
+        if(is_null($d))
+        {
+            return [];
+        }
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $this->format_streams_data($d->toArray()),
+        ], 200);
+    }
+
 
     /**
      * @OA\Get(

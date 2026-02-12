@@ -152,6 +152,7 @@ Route::prefix('/forms-streams')->group( function() {
         Route::post('/drop/{id}', [FormStreamController::class, 'drop']);
         Route::get('/find/{id}', [FormStreamController::class, 'find']);
         Route::get('/findall', [FormStreamController::class, 'findall']);
+        Route::get('/findall/{teacher}', [FormStreamController::class, 'findallByTeacher']);
     });
 });
 /** Positions*/
@@ -216,6 +217,7 @@ Route::prefix('/attendance')->group( function() {
         Route::post('/drop/{id}', [AttendanceController::class, 'drop']);
         Route::get('/find/{id}', [AttendanceController::class, 'find']);
         Route::get('/findall', [AttendanceController::class, 'findall']);
+        Route::get('/findall-by-stream/{stream}', [AttendanceController::class, 'findallByStream']);
     });
 });
 /** Enrollments - student subject */

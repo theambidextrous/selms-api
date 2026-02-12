@@ -43,9 +43,7 @@ class AttendanceController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'lesson' => 'required|string',
-                'student' => 'required|string',
-                'is_in' => 'required|string',
+                'formData' => 'array',
             ]);
             if( $validator->fails() ){
                 return response([
@@ -55,13 +53,25 @@ class AttendanceController extends Controller
                 ], 400);
             }
             $input = $request->all();
-            $input['current_term'] = $this->find_current_trm();
-            $user = Attendance::create($input);
+            $term = $this->find_current_trm();
+            $list = [];
+            foreach( $input['formData'] as $entry ){
+                $entry['current_term'] = $term;
+                array_push($list, $entry);
+            }
+
+            $response = Attendance::upsert(
+                $list,
+                ['student', 'lesson'],
+                ['is_in']
+            );
+
             return response([
                 'status' => 200,
                 'message' => 'Success. Done',
-                'data' => $user,
+                'data' => $response,
             ], 200);
+
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
                 'status' => 400,
@@ -165,6 +175,38 @@ class AttendanceController extends Controller
             'data' => $this->formatData($data->toArray()),
         ], 200);
     }
+
+    public function findallByStream($stream)
+    {
+        if( !$this->canManageModule() )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => $validator->errors()->all(),
+            ], 400);
+        }
+        $stream_lessons = Timetable::where('stream', $stream)->get();
+        $lesson_ids = [];
+        foreach($stream_lessons as $lesson){
+            array_push($lesson_ids, $lesson->id);
+        }
+        $data = Attendance::whereIn('lesson', $lesson_ids)->get();
+        if( is_null($data) )
+        {
+            return response([
+                'status' => 200,
+                'message' => "Done successfully",
+                'data' => [],
+            ], 200);
+        }
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $this->formatData($data->toArray()),
+        ], 200);
+    }
+
     public function find($id)
     {
         if( !$this->canManageModule() )
