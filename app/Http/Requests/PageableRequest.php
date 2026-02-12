@@ -18,7 +18,7 @@ class PageableRequest extends FormRequest
     {
         return [
             'page' => $this->page ?? 1,
-            'size' => $this->size ?? 10,
+            'size' => $this->size ?? 1000,
         ];
     }
 }

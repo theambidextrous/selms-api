@@ -108,7 +108,7 @@ class TimeTableController extends Controller
     }
     public function edit(Request $request, $id)
     {
-        if( !Auth::user()->is_super )
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
         {
             return response([
                 'status' => 400,
@@ -186,6 +186,14 @@ class TimeTableController extends Controller
     }
     public function drop($id)
     {
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => [],
+            ], 400);
+        }
         Timetable::find($id)->delete();
         return response([
             'status' => 200,
@@ -196,14 +204,48 @@ class TimeTableController extends Controller
     
     public function findall()
     {
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => [],
+            ], 400);
+        }
         return response([
             'status' => 200,
             'message' => "Done successfully",
             'data' => $this->find_ttable_data(),
         ], 200);
     }
+
+     public function findallByTeacher($teacher)
+    {
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => [],
+            ], 400);
+        }
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $this->find_ttable_teacher_data($teacher),
+        ], 200);
+    }
+
     public function find($id)
     {
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => [],
+            ], 400);
+        }
         $data = Timetable::find($id);
         if( is_null($data) )
         {
@@ -219,8 +261,17 @@ class TimeTableController extends Controller
             'data' => $data,
         ], 200);
     }
+
     public function generate(Request $request)
     {
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => [],
+            ], 400);
+        }
         $validator = Validator::make($request->all(), [
             'stream' => 'required|string|not_in:nn',
         ]);
@@ -241,6 +292,15 @@ class TimeTableController extends Controller
     }
     public function download(Request $request)
     {
+        if( !Auth::user()->is_super && !Auth::user()->is_teacher )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => [],
+            ], 400);
+        }
+
         $uuid_string = (string)Str::uuid() . '.pdf';
         $validator = Validator::make($request->all(), [
             'stream' => 'required|string|not_in:nn',
@@ -316,6 +376,18 @@ class TimeTableController extends Controller
         }
         return $d->id;
     }
+
+    protected function find_ttable_teacher_data($teacher)
+    {
+        $term = $this->find_current_trm();
+        $d = Timetable::where('teacher', $teacher)->where('current_term', $term)->orderBy('date')->get();
+        if(is_null($d))
+        {
+            return [];
+        }
+        return $this->format_ttable_data($d->toArray());
+    }
+
     protected function find_ttable_data()
     {
         $d = Timetable::where('id', '!=', 0)->orderBy('date')->get();

@@ -275,6 +275,35 @@ class StudentController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/students/findall",
+     *     tags={"Students"},
+     *     summary="List students",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
+    public function findallByStream($stream, PageableRequest $request) {
+        $collection = Student::query()
+            ->where('is_active', true) 
+            ->where('stream', $stream)
+            ->orderBy('created_at', 'desc');
+
+        $pageable = $request->defaults();
+        $data = $collection->paginate( $pageable['size'], ['*'], 'page', $pageable['page']);
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $this->format_stud_data($data->items()),
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $data->total(),
+                'last_page' => $data->lastPage(),
+            ]
+        ], 200);
+    }
+
        /**
      * @OA\Get(
      *     path="/pci/api/v1/students/searchall",

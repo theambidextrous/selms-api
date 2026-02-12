@@ -19,6 +19,7 @@ use App\Models\Setup;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Timetable;
+use App\Models\Term;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -26,9 +27,13 @@ use App\Mail\Code;
 
 class AttendanceController extends Controller
 {
+    private function canManageModule(){
+        return Auth::user()->is_super || Auth::user()->is_teacher;
+    }
+
     public function add(Request $request)
     {
-        if( !Auth::user()->is_super )
+        if( !$this->canManageModule() )
         {
             return response([
                 'status' => 400,
@@ -38,7 +43,6 @@ class AttendanceController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'current_term' => 'required|string',
                 'lesson' => 'required|string',
                 'student' => 'required|string',
                 'is_in' => 'required|string',
@@ -51,6 +55,7 @@ class AttendanceController extends Controller
                 ], 400);
             }
             $input = $request->all();
+            $input['current_term'] = $this->find_current_trm();
             $user = Attendance::create($input);
             return response([
                 'status' => 200,
@@ -73,7 +78,7 @@ class AttendanceController extends Controller
     }
     public function edit(Request $request, $id)
     {
-        if( !Auth::user()->is_super )
+        if( !$this->canManageModule() )
         {
             return response([
                 'status' => 400,
@@ -83,7 +88,6 @@ class AttendanceController extends Controller
         }
         try{
             $validator = Validator::make($request->all(), [
-                'current_term' => 'required|string',
                 'lesson' => 'required|string',
                 'student' => 'required|string',
                 'is_in' => 'required|string',
@@ -96,6 +100,7 @@ class AttendanceController extends Controller
                 ], 400);
             }
             $input = $request->all();
+            $input['current_term'] = $this->find_current_trm();
             Attendance::find($id)->update($input);
             $data = Attendance::find($id);
             return response([
@@ -119,6 +124,14 @@ class AttendanceController extends Controller
     }
     public function drop($id)
     {
+        if( !$this->canManageModule() )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => $validator->errors()->all(),
+            ], 400);
+        }
         Attendance::find($id)->delete();
         return response([
             'status' => 200,
@@ -129,6 +142,14 @@ class AttendanceController extends Controller
     
     public function findall(Request $request)
     {
+        if( !$this->canManageModule() )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => $validator->errors()->all(),
+            ], 400);
+        }
         $data = Attendance::all();
         if( is_null($data) )
         {
@@ -146,6 +167,14 @@ class AttendanceController extends Controller
     }
     public function find($id)
     {
+        if( !$this->canManageModule() )
+        {
+            return response([
+                'status' => 400,
+                'message' => 'Permission Denied. Only super admins allowed.',
+                'errors' => $validator->errors()->all(),
+            ], 400);
+        }
         $data = Attendance::find($id);
         if( is_null($data) )
         {
@@ -160,6 +189,16 @@ class AttendanceController extends Controller
             'message' => "Done successfully",
             'data' => $data,
         ], 200);
+    }
+
+    protected function find_current_trm()
+    {
+        $d = Term::where('is_current', true)->first();
+        if( is_null($d) )
+        {
+            return 0;
+        }
+        return $d->id;
     }
 
     protected function formatData($data){

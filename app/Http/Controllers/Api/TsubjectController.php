@@ -145,6 +145,32 @@ class TsubjectController extends Controller
             'data' => $_data,
         ], 200);
     }
+
+    public function findallByTeacher($teacherId)
+    {
+        $data = Tsubject::where('teacher', $teacherId)->get();
+        if( is_null($data) )
+        {
+            return response([
+                'status' => 200,
+                'message' => "Done successfully",
+                'data' => [],
+            ], 200);
+        }
+        $data = $data ? $data->toArray() : [];
+        $_data = array_map(function($entry){
+            $entry['teacher_data'] = User::find($entry['teacher']);
+            $entry['subject_data'] = Subject::find($entry['subject']);
+            return $entry;
+        }, $data);
+
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $_data,
+        ], 200);
+    }
+
     public function find($id)
     {
         $data = Tsubject::find($id);

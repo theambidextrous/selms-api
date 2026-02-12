@@ -130,6 +130,7 @@ Route::prefix('/students')->group( function() {
         Route::post('/rollover/form', [StudentController::class, 'rolloverform']);
         Route::get('/find/{id}', [StudentController::class, 'find']);
         Route::get('/findall', [StudentController::class, 'findall']);
+        Route::get('/findall/{stream}', [StudentController::class, 'findallByStream']);
         Route::post('/searchall', [StudentController::class, 'searchall']);
     });
 });
@@ -204,6 +205,7 @@ Route::prefix('/timetables')->group( function() {
         Route::post('/drop/{id}', [TimeTableController::class, 'drop']);
         Route::get('/find/{id}', [TimeTableController::class, 'find']);
         Route::get('/findall', [TimeTableController::class, 'findall']);
+        Route::get('/findall/{teacher}', [TimeTableController::class, 'findallByTeacher']);
     });
 });
 /** Attendance */
@@ -266,6 +268,7 @@ Route::prefix('/tsubjects')->group( function() {
         Route::post('/drop/{id}', [TsubjectController::class, 'drop']);
         Route::get('/find/{id}', [TsubjectController::class, 'find']);
         Route::get('/findall', [TsubjectController::class, 'findall']);
+        Route::get('/findall/{teacherId}', [TsubjectController::class, 'findallByTeacher']);
     });
 });
 /** Payments */
