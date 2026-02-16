@@ -131,6 +131,7 @@ Route::prefix('/students')->group( function() {
         Route::get('/find/{id}', [StudentController::class, 'find']);
         Route::get('/findall', [StudentController::class, 'findall']);
         Route::get('/findall/{stream}', [StudentController::class, 'findallByStream']);
+        Route::get('/find-by-subject/{subject}', [StudentController::class, 'findallBySubject']);
         Route::post('/searchall', [StudentController::class, 'searchall']);
     });
 });

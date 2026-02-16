@@ -41,9 +41,13 @@ use App\Mail\Code;
 
 class PerformanceController extends Controller
 {
+    protected function canManage() {
+        return Auth::user()->is_super || Auth::user()->is_admin || Auth::user()->is_teacher;
+    }
+
     public function add(Request $request)
     {
-        if( !Auth::user()->is_super && !Auth::user()->is_admin )
+        if( !$this->canManage() )
         {
             return response([
                 'status' => 400,
@@ -123,7 +127,7 @@ class PerformanceController extends Controller
     }
     public function edit(Request $request, $id)
     {
-        if( !Auth::user()->is_super && !Auth::user()->is_admin )
+        if( !$this->canManage() )
         {
             return response([
                 'status' => 400,
@@ -203,7 +207,7 @@ class PerformanceController extends Controller
     }
     public function drop($id)
     {
-        if( !Auth::user()->is_super && !Auth::user()->is_admin )
+        if( !$this->canManage() )
         {
             return response([
                 'status' => 200,
@@ -268,7 +272,7 @@ class PerformanceController extends Controller
             ], 400);
         }
         $return_data = [];
-        if( !Auth::user()->is_super && !Auth::user()->is_admin )
+        if( !$this->canManage() )
         {
             $return_data = [];
         }
@@ -310,7 +314,7 @@ class PerformanceController extends Controller
             ], 400);
         }
         $return_data = [];
-        if( !Auth::user()->is_super && !Auth::user()->is_admin )
+        if( !$this->canManage() )
         {
             $return_data = [];
         }
@@ -653,7 +657,7 @@ class PerformanceController extends Controller
     }
     protected function find_performance_data()
     {
-        if( !Auth::user()->is_super && !Auth::user()->is_admin )
+        if( !$this->canManage() )
         {
             return [];
         }

@@ -22,6 +22,7 @@ use App\Models\User;
 use App\Models\Form;
 use App\Models\Formstream;
 use App\Http\Requests\PageableRequest;
+use Illuminate\Support\Facades\DB;
 /** mail */
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Welcome;
@@ -303,6 +304,48 @@ class StudentController extends Controller
             ]
         ], 200);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/students/find-by-subject/{subject}",
+     *     tags={"Students"},
+     *     summary="List students by subject",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
+  public function findallBySubject($subject, PageableRequest $request) {
+
+    $pageable = $request->defaults();
+
+    $data = DB::table('students')
+        ->join('enrollments', 'students.id', '=', 'enrollments.student')
+        ->where('enrollments.subject', $subject)
+        ->select('students.*')
+        ->distinct()
+        ->paginate(
+            perPage: $pageable['size'],
+            page: $pageable['page']
+        );
+    
+    $items = $data->items();
+    
+    // Convert objects to arrays
+    $itemsArray = array_map(function($item) {
+        return (array) $item;
+    }, $items);
+    
+    return response([
+        'status' => 200,
+        'message' => "Done successfully",
+        'data' => $this->format_stud_data($itemsArray),
+        'pagination' => [
+            'current_page' => $data->currentPage(),
+            'per_page' => $data->perPage(),
+            'total' => $data->total(),
+            'last_page' => $data->lastPage(),
+        ]
+    ], 200);
+}
 
        /**
      * @OA\Get(
