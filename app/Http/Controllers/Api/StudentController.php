@@ -313,39 +313,88 @@ class StudentController extends Controller
      *     @OA\Response(response=200, description="Success")
      * )
      */
-  public function findallBySubject($subject, PageableRequest $request) {
+    public function findallBySubject($subject, PageableRequest $request) {
+        $pageable = $request->defaults();
 
-    $pageable = $request->defaults();
+        $data = DB::table('students')
+            ->join('enrollments', 'students.id', '=', 'enrollments.student')
+            ->where('enrollments.subject', $subject)
+            ->select('students.*')
+            ->distinct()
+            ->paginate(
+                perPage: $pageable['size'],
+                page: $pageable['page']
+            );
+        
+        $items = $data->items();
+        
+        // Convert objects to arrays
+        $itemsArray = array_map(function($item) {
+            return (array) $item;
+        }, $items);
+        
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $this->format_stud_data($itemsArray),
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $data->total(),
+                'last_page' => $data->lastPage(),
+            ]
+        ], 200);
+    }
 
-    $data = DB::table('students')
-        ->join('enrollments', 'students.id', '=', 'enrollments.student')
-        ->where('enrollments.subject', $subject)
-        ->select('students.*')
-        ->distinct()
-        ->paginate(
-            perPage: $pageable['size'],
-            page: $pageable['page']
-        );
+    /**
+     * @OA\Get(
+     *     path="/pci/api/v1/students/find-by-parent/{parent}",
+     *     tags={"Students"},
+     *     summary="List students by parent",
+     *     @OA\Response(response=200, description="Success")
+     * )
+     */
+    public function findallByParent($parent, PageableRequest $request) {
+        $pageable = $request->defaults();
+
+        $data = DB::table('students')
+            ->where('parent', $parent)
+            ->leftJoin('fees', function($join) {
+                $join->on('students.id', '=', 'fees.student');
+            })
+            ->select(
+                'students.*',
+                DB::raw('COALESCE(SUM(fees.fee), 0) as total_fee'),
+                DB::raw('COALESCE(SUM(fees.paid_amount), 0) as total_paid'),
+                DB::raw('COALESCE(SUM(fees.fee - fees.paid_amount), 0) as balance')
+            )
+            ->groupBy('students.id')
+            ->distinct()
+            ->paginate(
+                perPage: $pageable['size'],
+                page: $pageable['page']
+            );
+
+        $items = $data->items();
+        
+        $itemsArray = array_map(function($item) {
+            return (array) $item;
+        }, $items);
+        
+        return response([
+            'status' => 200,
+            'message' => "Done successfully",
+            'data' => $this->format_stud_data($itemsArray),
+            'pagination' => [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $data->total(),
+                'last_page' => $data->lastPage(),
+            ]
+        ], 200);
+    }
+
     
-    $items = $data->items();
-    
-    // Convert objects to arrays
-    $itemsArray = array_map(function($item) {
-        return (array) $item;
-    }, $items);
-    
-    return response([
-        'status' => 200,
-        'message' => "Done successfully",
-        'data' => $this->format_stud_data($itemsArray),
-        'pagination' => [
-            'current_page' => $data->currentPage(),
-            'per_page' => $data->perPage(),
-            'total' => $data->total(),
-            'last_page' => $data->lastPage(),
-        ]
-    ], 200);
-}
 
        /**
      * @OA\Get(
