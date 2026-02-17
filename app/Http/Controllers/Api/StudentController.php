@@ -278,7 +278,7 @@ class StudentController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/pci/api/v1/students/findall",
+     *     path="/pci/api/v1/students/findall/{stream}",
      *     tags={"Students"},
      *     summary="List students",
      *     @OA\Response(response=200, description="Success")

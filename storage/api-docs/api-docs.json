@@ -172,6 +172,20 @@
                 }
             }
         },
+        "/pci/api/v1/administrators/all": {
+            "get": {
+                "tags": [
+                    "Administrators"
+                ],
+                "summary": "Fetch list of all users",
+                "operationId": "3cdfa83a37b8528d5e846cd9ee9cb915",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
         "/pci/api/v1/administrators/findall": {
             "get": {
                 "tags": [
@@ -193,6 +207,34 @@
                 ],
                 "summary": "Fetch single school administrator entity",
                 "operationId": "a9c8071dc5f51eff494f19c9a49e4c7e",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/messages/approve": {
+            "post": {
+                "tags": [
+                    "Messages"
+                ],
+                "summary": "Add school administrator",
+                "operationId": "4f6c5b5a5a938b0737f873422a245866",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/messages/findall": {
+            "get": {
+                "tags": [
+                    "Messages"
+                ],
+                "summary": "List students",
+                "operationId": "812619381ea4731ec43f225d70decd1f",
                 "responses": {
                     "200": {
                         "description": "Success"
@@ -389,6 +431,20 @@
                 ],
                 "summary": "Find all form streams",
                 "operationId": "f3bff12042743eccf55077c9b0fd5e93",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/forms-streams/findall/{teacher}": {
+            "get": {
+                "tags": [
+                    "Form streams"
+                ],
+                "summary": "Find all form streams",
+                "operationId": "7deb7f29e95c61f39dcd13c84b8bce47",
                 "responses": {
                     "200": {
                         "description": "Success"
@@ -669,6 +725,48 @@
                 ],
                 "summary": "List students",
                 "operationId": "7f4f966a2c71d337f191600547fdc4cc",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/findall/{stream}": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "List students",
+                "operationId": "9634926d9bb78361322f09763bb19775",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/find-by-subject/{subject}": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "List students by subject",
+                "operationId": "e9e2363250a5775eec9b3da65bc3e03e",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pci/api/v1/students/find-by-parent/{parent}": {
+            "get": {
+                "tags": [
+                    "Students"
+                ],
+                "summary": "List students by parent",
+                "operationId": "5e011a7aa573ba92cf2d2d2cc34c60ae",
                 "responses": {
                     "200": {
                         "description": "Success"
@@ -992,6 +1090,10 @@
         {
             "name": "Administrators",
             "description": "Administrators"
+        },
+        {
+            "name": "Messages",
+            "description": "Messages"
         },
         {
             "name": "Finance",
