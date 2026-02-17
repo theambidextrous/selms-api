@@ -16,7 +16,7 @@ use Carbon\Carbon;
 use App\Models\Formstream;
 use App\Models\Form;
 use App\Models\User;
-use App\Models\TSubject;
+use App\Models\Tsubject;
 use App\Models\Subject;
 /** mail */
 use Illuminate\Support\Facades\Mail;
@@ -187,7 +187,7 @@ class FormStreamController extends Controller
      */
     public function findallByTeacher($teacher)
     {
-        $t_subjects = TSubject::where("teacher", $teacher)
+        $t_subjects = Tsubject::where("teacher", $teacher)
             ->select('subject')
             ->get();
         $t_forms = Subject::whereIn('id', $t_subjects)
